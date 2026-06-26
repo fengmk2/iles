@@ -50,8 +50,8 @@
     "build:prepare": "rm -rf dist && node scripts/copyShared",
     "build:client": "vue-tsc --noEmit -p src/client && tsc -p src/client && node scripts/copyClient",
     "build:node": "vp pack --clean",
-    "lint": "vp lint",
-    "lint:fix": "vp lint --fix"
+    "lint": "node scripts/copyShared && vp lint",
+    "lint:fix": "node scripts/copyShared && vp lint --fix"
   },
   "dependencies": {
     "@antfu/install-pkg": "^0.3.3",

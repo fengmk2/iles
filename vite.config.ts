@@ -234,7 +234,9 @@ export default defineConfig({
       'unicorn/no-instanceof-builtins': 'error',
       'unicorn/no-new-array': 'error',
       'unicorn/no-new-buffer': 'error',
-      'unicorn/number-literal-case': 'error',
+      // Disabled: conflicts with oxfmt, which normalizes hex literals to
+      // lowercase, while this rule requires uppercase. The formatter wins.
+      'unicorn/number-literal-case': 'off',
       'unicorn/prefer-dom-node-text-content': 'error',
       'unicorn/prefer-includes': 'error',
       'unicorn/prefer-string-starts-ends-with': 'error',

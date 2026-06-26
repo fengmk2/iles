@@ -44,7 +44,7 @@ const versionIncrements = [
 /**
  * @param {import('semver').ReleaseType} i
  */
-function inc (i) {
+function inc(i) {
   return semver.inc(pkg.version, i)
 }
 
@@ -53,7 +53,7 @@ function inc (i) {
  * @param {string[]} args
  * @param {object} opts
  */
-async function run (bin, args, opts = {}) {
+async function run(bin, args, opts = {}) {
   return execa(bin, args, { stdio: 'inherit', ...opts })
 }
 
@@ -62,25 +62,25 @@ async function run (bin, args, opts = {}) {
  * @param {string[]} args
  * @param {object} opts
  */
-async function dryRun (bin, args, opts = {}) {
+async function dryRun(bin, args, opts = {}) {
   console.info(pc.blue(`[dryrun] ${bin} ${args.join(' ')}`), opts)
 }
 
 /**
  * @param {string} msg
  */
-function step (msg) {
+function step(msg) {
   console.info(pc.cyan(msg))
 }
 
 /**
  * @param {string} paths
  */
-function resolve (paths) {
+function resolve(paths) {
   return path.resolve(__dirname, `../packages/${name}/${paths}`)
 }
 
-function jsPackage () {
+function jsPackage() {
   const path = resolve('package.json')
   const content = fs.readFileSync(path, 'utf-8')
   return {
@@ -88,14 +88,14 @@ function jsPackage () {
     path,
     content,
     ...require(path),
-    updateVersion (version) {
+    updateVersion(version) {
       const newContent = { ...JSON.parse(content), version }
       fs.writeFileSync(path, `${JSON.stringify(newContent, null, 2)}\n`)
     },
   }
 }
 
-async function main () {
+async function main() {
   const runIfNotDry = isDryRun ? dryRun : run
 
   /**
@@ -105,9 +105,7 @@ async function main () {
     type: 'select',
     name: 'release',
     message: 'Select release type',
-    choices: versionIncrements
-      .map(i => `${i} (${inc(i)})`)
-      .concat(['custom']),
+    choices: versionIncrements.map((i) => `${i} (${inc(i)})`).concat(['custom']),
   })
 
   let targetVersion
@@ -122,8 +120,7 @@ async function main () {
       initial: pkg.version,
     })
     targetVersion = res.version
-  }
-  else {
+  } else {
     targetVersion = release.match(/\((.*)\)/)[1]
   }
 
@@ -146,7 +143,8 @@ async function main () {
   pkg.updateVersion(targetVersion)
 
   step(`\nBuilding ${pkg.type}...`)
-  if (!skipBuild && !isDryRun) await run('pnpm', ['nx', 'run', `${pkg.name}:build`], { cwd: path.resolve(__dirname, '..') })
+  if (!skipBuild && !isDryRun)
+    await run('pnpm', ['nx', 'run', `${pkg.name}:build`], { cwd: path.resolve(__dirname, '..') })
   else console.info('(skipped)')
 
   step('\nGenerating changelog...')
@@ -157,8 +155,7 @@ async function main () {
     step('\nCommitting changes...')
     await runIfNotDry('git', ['add', '-A'])
     await runIfNotDry('git', ['commit', '-m', `release: ${tag}`])
-  }
-  else {
+  } else {
     console.info('No changes to commit.')
   }
 
@@ -179,16 +176,16 @@ async function main () {
  * @param {string} version
  * @param {Function} runIfNotDry
  */
-async function publishPackage (version, runIfNotDry) {
+async function publishPackage(version, runIfNotDry) {
   try {
     await runIfNotDry('pnpm', ['publish', '--access', 'public'], {
       stdio: 'inherit',
       cwd: resolve('.'),
     })
     console.info(pc.green(`Successfully published ${name}@${version}`))
-  }
-  catch (e) {
-    if (e.stderr.match(/previously published/)) console.info(pc.red(`Skipping already published: ${name}`))
+  } catch (e) {
+    if (e.stderr.match(/previously published/))
+      console.info(pc.red(`Skipping already published: ${name}`))
     else throw e
   }
 }

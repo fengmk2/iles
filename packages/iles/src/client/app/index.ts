@@ -17,14 +17,15 @@ import { resolveProps } from './props'
 
 const newApp = import.meta.env.SSR ? createSSRApp : createClientApp
 
-function createRouter (base: string | undefined, routerOptions: Partial<RouterOptions>) {
+function createRouter(base: string | undefined, routerOptions: Partial<RouterOptions>) {
   if (base === '/') base = undefined
 
   return createVueRouter({
     scrollBehavior: (current, previous, savedPosition) => {
       if (savedPosition) return savedPosition
       if (current.path !== previous.path && !current.hash) return { top: 0 }
-      if (current.hash) return { top: document.querySelector<HTMLElement>(current.hash)?.offsetTop || 0 }
+      if (current.hash)
+        return { top: document.querySelector<HTMLElement>(current.hash)?.offsetTop || 0 }
     },
     ...routerOptions,
     routes,
@@ -46,7 +47,7 @@ export const createApp: CreateAppFactory = async (options = {}) => {
   const router = createRouter(config.base, routerOptions)
   app.use(router)
   router.beforeResolve(resolveLayout)
-  router.beforeResolve(async route => await resolveProps(route, ssrProps))
+  router.beforeResolve(async (route) => await resolveProps(route, ssrProps))
 
   // Set the path that should be rendered.
   if (import.meta.env.SSR) {
@@ -77,7 +78,8 @@ export const createApp: CreateAppFactory = async (options = {}) => {
 
   // Apply any configuration added by the user in app.ts
   // if (headConfig) useHead(ref(typeof headConfig === 'function' ? headConfig(context) : headConfig))
-  if (headConfig) head.push(ref(typeof headConfig === 'function' ? headConfig(context) : headConfig))
+  if (headConfig)
+    head.push(ref(typeof headConfig === 'function' ? headConfig(context) : headConfig))
   if (enhanceApp) await enhanceApp(context)
   await installMDXComponents(context, userApp)
 
@@ -85,7 +87,7 @@ export const createApp: CreateAppFactory = async (options = {}) => {
 }
 
 if (!import.meta.env.SSR) {
-  (async () => {
+  ;(async () => {
     const { app, router } = await createApp()
 
     const devtools = await import('./composables/devtools')

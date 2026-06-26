@@ -4,7 +4,7 @@ import routes from '@islands/routes'
 
 describe('app routes', () => {
   test('empty', async () => {
-    expect(routes.map(route => route.path)).toEqual([
+    expect(routes.map((route) => route.path)).toEqual([
       '/',
       '/404',
       '/feed.rss',

@@ -9,7 +9,7 @@ const packagesDir = path.resolve(__dirname, '../packages')
  * @param {number} bytes
  * @returns {string}
  */
-function formatSize (bytes: number) {
+function formatSize(bytes: number) {
   if (bytes < 1024) return `${bytes} B`
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(2)} KB`
   return `${(bytes / (1024 * 1024)).toFixed(2)} MB`
@@ -19,7 +19,7 @@ function formatSize (bytes: number) {
  * @param {string} dir
  * @returns {{ js: number, dts: number }}
  */
-function getDistSizes (dir: string) {
+function getDistSizes(dir: string) {
   let js = 0
   let dts = 0
 
@@ -49,8 +49,11 @@ function getDistSizes (dir: string) {
 
 const packages = fs
   .readdirSync(packagesDir, { withFileTypes: true })
-  .filter(entry => entry.isDirectory() && fs.existsSync(path.join(packagesDir, entry.name, 'package.json')))
-  .map(entry => {
+  .filter(
+    (entry) =>
+      entry.isDirectory() && fs.existsSync(path.join(packagesDir, entry.name, 'package.json')),
+  )
+  .map((entry) => {
     const packagePath = path.join(packagesDir, entry.name)
     const pkg = JSON.parse(fs.readFileSync(path.join(packagePath, 'package.json'), 'utf-8'))
     const { js, dts } = getDistSizes(path.join(packagePath, 'dist'))
@@ -63,10 +66,13 @@ const packages = fs
   })
   .sort((a, b) => a.name.localeCompare(b.name))
 
-const nameWidth = Math.max('Package'.length, ...packages.map(item => item.name.length))
-const jsWidth = Math.max('Dist JS'.length, ...packages.map(item => formatSize(item.js).length))
-const dtsWidth = Math.max('Dist DTS'.length, ...packages.map(item => formatSize(item.dts).length))
-const totalWidth = Math.max('Total'.length, ...packages.map(item => formatSize(item.total).length))
+const nameWidth = Math.max('Package'.length, ...packages.map((item) => item.name.length))
+const jsWidth = Math.max('Dist JS'.length, ...packages.map((item) => formatSize(item.js).length))
+const dtsWidth = Math.max('Dist DTS'.length, ...packages.map((item) => formatSize(item.dts).length))
+const totalWidth = Math.max(
+  'Total'.length,
+  ...packages.map((item) => formatSize(item.total).length),
+)
 
 const header = `${'Package'.padEnd(nameWidth)}  ${'Dist JS'.padStart(jsWidth)}  ${'Dist DTS'.padStart(dtsWidth)}  ${'Total'.padStart(totalWidth)}`
 const separator = `${'-'.repeat(nameWidth)}  ${'-'.repeat(jsWidth)}  ${'-'.repeat(dtsWidth)}  ${'-'.repeat(totalWidth)}`
@@ -75,11 +81,15 @@ console.info(header)
 console.info(separator)
 
 for (const item of packages) {
-  console.info(`${item.name.padEnd(nameWidth)}  ${formatSize(item.js).padStart(jsWidth)}  ${formatSize(item.dts).padStart(dtsWidth)}  ${formatSize(item.total).padStart(totalWidth)}`)
+  console.info(
+    `${item.name.padEnd(nameWidth)}  ${formatSize(item.js).padStart(jsWidth)}  ${formatSize(item.dts).padStart(dtsWidth)}  ${formatSize(item.total).padStart(totalWidth)}`,
+  )
 }
 
 const totalJs = packages.reduce((sum, item) => sum + item.js, 0)
 const totalDts = packages.reduce((sum, item) => sum + item.dts, 0)
 const totalAll = totalJs + totalDts
 console.info(separator)
-console.info(`${'Total'.padEnd(nameWidth)}  ${formatSize(totalJs).padStart(jsWidth)}  ${formatSize(totalDts).padStart(dtsWidth)}  ${formatSize(totalAll).padStart(totalWidth)}`)
+console.info(
+  `${'Total'.padEnd(nameWidth)}  ${formatSize(totalJs).padStart(jsWidth)}  ${formatSize(totalDts).padStart(dtsWidth)}  ${formatSize(totalAll).padStart(totalWidth)}`,
+)

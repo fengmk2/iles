@@ -35,7 +35,7 @@ const remarkProcessor: HrefProcessor = (ast, vfile) => {
     }
   })
 
-  function replaceHrefAttribute (node: MdxJsxTextElement | MdxJsxFlowElement) {
+  function replaceHrefAttribute(node: MdxJsxTextElement | MdxJsxFlowElement) {
     for (const attr of node.attributes) {
       if (attr.type === 'mdxJsxAttribute' && attr.name === 'href') {
         if (isString(attr.value) && attr.value) attr.value = toExplicitHtmlPath(attr.value)

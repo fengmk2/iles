@@ -1,4 +1,4 @@
-import type { ViteDevServer } from 'vite'
+import type { ViteDevServer } from 'vite-plus'
 import type { createApi } from './api'
 
 export const MODULE_ID = '@islands/routes'
@@ -79,7 +79,10 @@ export interface PagesOptions {
    * Use this hook to modify the frontmatter for pages and MDX files.
    * See `extendRoute` if you only want to modify route information.
    */
-  extendFrontmatter?: (frontmatter: RawPageMatter, filename: string) => Awaitable<RawPageMatter | void>
+  extendFrontmatter?: (
+    frontmatter: RawPageMatter,
+    filename: string,
+  ) => Awaitable<RawPageMatter | void>
   /**
    * Use this hook to modify route
    * See `extendFrontmatter` if you want to add metadata.

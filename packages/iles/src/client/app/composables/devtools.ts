@@ -27,10 +27,10 @@ const strategyLabels: Record<string, any> = {
 }
 
 const frameworkColors: Record<any, any> = {
-  preact: { backgroundColor: 0x673AB8, textColor: 0xFFFFFF },
-  solid: { backgroundColor: 0x446B9E, textColor: 0xFFFFFF },
-  svelte: { backgroundColor: 0xFF3E00, textColor: 0xFFFFFF },
-  vue: { backgroundColor: 0x42B983, textColor: 0xFFFFFF },
+  preact: { backgroundColor: 0x673ab8, textColor: 0xffffff },
+  solid: { backgroundColor: 0x446b9e, textColor: 0xffffff },
+  svelte: { backgroundColor: 0xff3e00, textColor: 0xffffff },
+  vue: { backgroundColor: 0x42b983, textColor: 0xffffff },
 }
 
 type DevToolsPluginAPI = Parameters<Parameters<typeof setupDevtoolsPlugin>[1]>[0]
@@ -45,31 +45,30 @@ let props = {} as PageData['props']
 let site = {} as PageData['site']
 
 const devtools = {
-  updateIslandsInspector () {
+  updateIslandsInspector() {
     devtoolsApi?.sendInspectorTree(INSPECTOR_ID)
   },
 
-  addIslandToDevtools (island: any) {
+  addIslandToDevtools(island: any) {
     islandsById[island.id] = island
     devtools.updateIslandsInspector()
     devtoolsApi?.selectInspectorNode(INSPECTOR_ID, route?.path)
   },
 
-  removeIslandFromDevtools (island: any) {
+  removeIslandFromDevtools(island: any) {
     delete islandsById[island.id]
 
     // NOTE: Vue could unmount ile-1 before ile-2, so check for unused ids.
-    while (lastUsedIslandId > 0 && !islandsById[`ile-${lastUsedIslandId}`])
-      lastUsedIslandId -= 1
+    while (lastUsedIslandId > 0 && !islandsById[`ile-${lastUsedIslandId}`]) lastUsedIslandId -= 1
 
     devtools.updateIslandsInspector()
   },
 
-  nextIslandId () {
+  nextIslandId() {
     return `ile-${++lastUsedIslandId}`
   },
 
-  onHydration ({ id, ...event }: any) {
+  onHydration({ id, ...event }: any) {
     const time = Date.now()
     const island: any = islandsById[id]
     if (!island) return
@@ -92,7 +91,7 @@ const devtools = {
 
 ;(window as any).__ILE_DEVTOOLS__ = devtools
 
-export function installDevtools (app: App, config: AppClientConfig) {
+export function installDevtools(app: App, config: AppClientConfig) {
   appConfig = config
   const pageData = usePage(app)
   route = pageData.route
@@ -102,106 +101,123 @@ export function installDevtools (app: App, config: AppClientConfig) {
   meta = pageData.meta
   site = pageData.site
 
-  setupDevtoolsPlugin({
-    id: 'com.maximomussini.iles',
-    label: ISLAND_TYPE,
-    logo: 'https://iles-docs.netlify.app/favicon.svg',
-    packageName: 'iles',
-    homepage: 'https://github.com/ElMassimo/iles',
-    componentStateTypes,
-    app: app as any,
-  }, (api) => {
-    devtoolsApi = api
-
-    api.addInspector({
-      id: INSPECTOR_ID,
+  setupDevtoolsPlugin(
+    {
+      id: 'com.maximomussini.iles',
       label: ISLAND_TYPE,
-      icon: 'waves',
-      treeFilterPlaceholder: 'Search islands',
-    })
+      logo: 'https://iles-docs.netlify.app/favicon.svg',
+      packageName: 'iles',
+      homepage: 'https://github.com/ElMassimo/iles',
+      componentStateTypes,
+      app: app as any,
+    },
+    (api) => {
+      devtoolsApi = api
 
-    api.addTimelineLayer({
-      id: HYDRATION_LAYER_ID,
-      color: 0xFF984F,
-      label: 'Hydration 🏝',
-    })
+      api.addInspector({
+        id: INSPECTOR_ID,
+        label: ISLAND_TYPE,
+        icon: 'waves',
+        treeFilterPlaceholder: 'Search islands',
+      })
 
-    api.on.inspectComponent(({ componentInstance, instanceData }) => {
-      const island = findIsland(componentInstance?.proxy)
-      if (!island) return
-      instanceData.state.push({ type: ISLAND_TYPE, key: 'within', value: island })
-    })
+      api.addTimelineLayer({
+        id: HYDRATION_LAYER_ID,
+        color: 0xff984f,
+        label: 'Hydration 🏝',
+      })
 
-    api.on.getInspectorTree(async (payload) => {
-      if (payload.app !== app || payload.inspectorId !== INSPECTOR_ID) return
-      const userFilter = payload.filter?.toLowerCase() || ''
-      const islandNodes = islands.value
-        .filter((island: any) => island.id.includes(userFilter) || island.componentName.toLowerCase().includes(userFilter))
-        .map((island: any) => ({
-          id: island.id,
-          label: island.componentName,
-          tags: [
-            { label: island.id, textColor: 0, ...frameworkColors[island.framework] },
-            { label: getStrategy(island), textColor: 0, backgroundColor: 0x22D3EE },
-            getMediaQuery(island) && { label: getMediaQuery(island), textColor: 0, backgroundColor: 0xFB923C },
-          ].filter(x => x) as InspectorNodeTag[],
-        }))
-      payload.rootNodes = [{
-        id: meta.href,
-        label: getComponentName(page.value),
-        children: islandNodes,
-        tags: [
-          { label: page.value.layoutName ?? 'no layout', textColor: 0, backgroundColor: 0x42B983 },
-        ],
-      }]
-    })
+      api.on.inspectComponent(({ componentInstance, instanceData }) => {
+        const island = findIsland(componentInstance?.proxy)
+        if (!island) return
+        instanceData.state.push({ type: ISLAND_TYPE, key: 'within', value: island })
+      })
 
-    api.on.getInspectorState((payload) => {
-      if (payload.app !== app || payload.inspectorId !== INSPECTOR_ID) return
+      api.on.getInspectorTree(async (payload) => {
+        if (payload.app !== app || payload.inspectorId !== INSPECTOR_ID) return
+        const userFilter = payload.filter?.toLowerCase() || ''
+        const islandNodes = islands.value
+          .filter(
+            (island: any) =>
+              island.id.includes(userFilter) ||
+              island.componentName.toLowerCase().includes(userFilter),
+          )
+          .map((island: any) => ({
+            id: island.id,
+            label: island.componentName,
+            tags: [
+              { label: island.id, textColor: 0, ...frameworkColors[island.framework] },
+              { label: getStrategy(island), textColor: 0, backgroundColor: 0x22d3ee },
+              getMediaQuery(island) && {
+                label: getMediaQuery(island),
+                textColor: 0,
+                backgroundColor: 0xfb923c,
+              },
+            ].filter((x) => x) as InspectorNodeTag[],
+          }))
+        payload.rootNodes = [
+          {
+            id: meta.href,
+            label: getComponentName(page.value),
+            children: islandNodes,
+            tags: [
+              {
+                label: page.value.layoutName ?? 'no layout',
+                textColor: 0,
+                backgroundColor: 0x42b983,
+              },
+            ],
+          },
+        ]
+      })
 
-      if (payload.nodeId === route.path) {
+      api.on.getInspectorState((payload) => {
+        if (payload.app !== app || payload.inspectorId !== INSPECTOR_ID) return
+
+        if (payload.nodeId === route.path) {
+          payload.state = {
+            props: [
+              { key: 'component', value: page.value },
+              { key: 'layout', value: page.value.layoutName },
+              { key: 'frontmatter', value: frontmatter },
+              { key: 'meta', value: meta },
+              { key: 'props', value: props.value },
+              { key: 'site', value: site },
+            ].filter((x) => x),
+          }
+          return
+        }
+
+        const island = islandsById[payload.nodeId] as any
+        if (!island) return
+        const ileRoot = island.$el?.nextSibling
         payload.state = {
           props: [
-            { key: 'component', value: page.value },
-            { key: 'layout', value: page.value.layoutName },
-            { key: 'frontmatter', value: frontmatter },
-            { key: 'meta', value: meta },
-            { key: 'props', value: props.value },
-            { key: 'site', value: site },
-          ].filter(x => x),
+            { key: 'component', value: island.component },
+            { key: 'el', value: ileRoot?.children?.[0] || ileRoot },
+            { key: 'strategy', value: getStrategy(island) },
+            getMediaQuery(island) && { key: 'mediaQuery', value: getMediaQuery(island) },
+            { key: 'framework', value: island.framework },
+            { key: 'props', value: island.$attrs },
+            { key: 'importName', value: island.importName },
+            { key: 'importFrom', value: island.importFrom.replace(island.appConfig.root, '') },
+          ].filter((x) => x),
         }
-        return
-      }
-
-      const island = islandsById[payload.nodeId] as any
-      if (!island) return
-      const ileRoot = island.$el?.nextSibling
-      payload.state = {
-        props: [
-          { key: 'component', value: island.component },
-          { key: 'el', value: ileRoot?.children?.[0] || ileRoot },
-          { key: 'strategy', value: getStrategy(island) },
-          getMediaQuery(island) && { key: 'mediaQuery', value: getMediaQuery(island) },
-          { key: 'framework', value: island.framework },
-          { key: 'props', value: island.$attrs },
-          { key: 'importName', value: island.importName },
-          { key: 'importFrom', value: island.importFrom.replace(island.appConfig.root, '') },
-        ].filter(x => x),
-      }
-    })
-  })
+      })
+    },
+  )
 }
 
-function findIsland (component: any): any {
+function findIsland(component: any): any {
   if (!component) return null
   if (component.strategy?.startsWith('client:')) return component
   return findIsland(component.$parent)
 }
 
-function getStrategy (island: any) {
+function getStrategy(island: any) {
   return strategyLabels[island.strategy]
 }
 
-function getMediaQuery (island: any) {
+function getMediaQuery(island: any) {
   if (island.strategy === 'client:media') return island['client:media']
 }

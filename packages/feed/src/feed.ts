@@ -9,7 +9,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url))
 /**
  * An iles module that provides a component to generate RSS, Atom, and JSON feeds.
  */
-export default function IlesFeed (): IlesModule {
+export default function IlesFeed(): IlesModule {
   return {
     name: '@islands/feed',
     components: {

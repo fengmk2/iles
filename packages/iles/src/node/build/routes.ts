@@ -6,7 +6,7 @@ import { pathToFilename } from './utils'
 
 const DYNAMIC_PARAM = '/:'
 
-export async function getRoutesToRender (config: AppConfig, createApp: CreateAppFactory) {
+export async function getRoutesToRender(config: AppConfig, createApp: CreateAppFactory) {
   const routesToRender = new Map<string, RouteToRender>()
   const { router } = await createApp()
 
@@ -19,29 +19,34 @@ export async function getRoutesToRender (config: AppConfig, createApp: CreateApp
   return Array.from(routesToRender.values())
 }
 
-async function resolveRoutesToRender (router: Router) {
+async function resolveRoutesToRender(router: Router) {
   const toResolvedPath = (route: any) => {
     try {
       return { path: router.resolve(route).fullPath, ssrProps: route.ssrProps }
-    }
-    catch (error) {
-      throw new Error(`Could not resolve ${String(route.name)}. Params: ${JSON.stringify(route.params)}. Error: ${error.message}`)
+    } catch (error) {
+      throw new Error(
+        `Could not resolve ${String(route.name)}. Params: ${JSON.stringify(route.params)}. Error: ${error.message}`,
+      )
     }
   }
 
-  return (await Promise.all(router.getRoutes().map(async (route) => {
-    const routes = route.path.includes(DYNAMIC_PARAM) ? await getDynamicPaths(route) : [route]
-    return routes.map(toResolvedPath)
-  }))).flat()
+  return (
+    await Promise.all(
+      router.getRoutes().map(async (route) => {
+        const routes = route.path.includes(DYNAMIC_PARAM) ? await getDynamicPaths(route) : [route]
+        return routes.map(toResolvedPath)
+      }),
+    )
+  ).flat()
 }
 
-async function getDynamicPaths (route: RouteRecordNormalized) {
+async function getDynamicPaths(route: RouteRecordNormalized) {
   const { components, path } = route
   const file = path
   const { default: component } = components || {}
 
   const page: PageComponent | undefined = isLazy(component)
-    ? await component().then(m => 'default' in m ? m.default : m)
+    ? await component().then((m) => ('default' in m ? m.default : m))
     : component
 
   const variants = await page?.getStaticPaths?.({ route })
@@ -50,19 +55,25 @@ async function getDynamicPaths (route: RouteRecordNormalized) {
     return []
   }
   if (!Array.isArray(variants))
-    throw new Error(`Expected array from 'getStaticPaths' in ${file}, got: ${JSON.stringify(variants)}`)
+    throw new Error(
+      `Expected array from 'getStaticPaths' in ${file}, got: ${JSON.stringify(variants)}`,
+    )
 
-  return variants.map(({ params, props }) =>
-    ({ name: route.name, params, ssrProps: { ...params, ...props } }))
+  return variants.map(({ params, props }) => ({
+    name: route.name,
+    params,
+    ssrProps: { ...params, ...props },
+  }))
 }
 
-function isLazy (value: NonNullable<RouteRecordNormalized['components']>['default']): value is () => Promise<RouteComponent> {
+function isLazy(
+  value: NonNullable<RouteRecordNormalized['components']>['default'],
+): value is () => Promise<RouteComponent> {
   return typeof value === 'function'
 }
 
-export function toArray<T> (array?: T | T[]): T[] {
+export function toArray<T>(array?: T | T[]): T[] {
   array = array || []
-  if (Array.isArray(array))
-    return array
+  if (Array.isArray(array)) return array
   return [array]
 }

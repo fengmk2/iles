@@ -4,7 +4,9 @@ import { watch, onBeforeUnmount } from 'vue'
 const { date } = defineProps<{ date: Date }>()
 
 let relativeTimeStr = $ref('')
-let dateStr = $computed(() => date.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' }))
+let dateStr = $computed(() =>
+  date.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' }),
+)
 let timeStr = $computed(() => date.toISOString())
 
 if (!import.meta.env.SSR) {

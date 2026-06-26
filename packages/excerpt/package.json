@@ -37,7 +37,7 @@
     "@types/estree-jsx": "^1.0.5",
     "@types/hast": "^3.0.4",
     "iles": "workspace:*",
-    "vfile": "^6.0.2",
-    "unified": "^11.0.5"
+    "unified": "^11.0.5",
+    "vfile": "^6.0.2"
   }
 }

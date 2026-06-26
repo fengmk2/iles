@@ -1,4 +1,4 @@
-import { Plugin, ViteDevServer } from 'vite'
+import { Plugin, ViteDevServer } from 'vite-plus'
 
 import glob from 'fast-glob'
 import micromatch from 'micromatch'
@@ -19,8 +19,12 @@ interface DocumentModule {
   hasDocument: (path: string) => boolean
 }
 
-export default function documentsPlugin (config: AppConfig): Plugin {
-  const { root, drafts, namedPlugins: { pages } } = config
+export default function documentsPlugin(config: AppConfig): Plugin {
+  const {
+    root,
+    drafts,
+    namedPlugins: { pages },
+  } = config
 
   let server: ViteDevServer
 
@@ -28,41 +32,43 @@ export default function documentsPlugin (config: AppConfig): Plugin {
 
   return {
     name: 'iles:documents',
-    configureServer (devServer) {
+    configureServer(devServer) {
       server = devServer
     },
-    resolveId (id) {
-      if (id.startsWith(DOCS_VIRTUAL_ID))
-        return id
+    resolveId(id) {
+      if (id.startsWith(DOCS_VIRTUAL_ID)) return id
     },
     // Extract frontmatter for each file in the matching pattern, and create a
     // module where the default export is an array with each matching document.
-    async load (id, options) {
+    async load(id, options) {
       if (!id.startsWith(DOCS_VIRTUAL_ID)) return
 
-      const { query: { pattern: rawPath } } = parseId(id)
+      const {
+        query: { pattern: rawPath },
+      } = parseId(id)
 
       // Extract pattern from the virtual module path, and resolve any alias.
-      const path = relative(root, await config.resolvePath(rawPath) || rawPath)
+      const path = relative(root, (await config.resolvePath(rawPath)) || rawPath)
       const pattern = path.includes('*') ? path : `${path}/**/*.{md,mdx}`
 
       // Allow Vite to automatically detect added or removed files.
       if (server)
-        modulesById[id] = { pattern, hasDocument: path => micromatch.isMatch(path, pattern) }
+        modulesById[id] = { pattern, hasDocument: (path) => micromatch.isMatch(path, pattern) }
 
       // Obtain files matching the specified pattern and extract frontmatter.
       const files = await glob(pattern, { cwd: root })
       debug.documents('%s %O', rawPath, { path, pattern, files })
 
-      let data = await Promise.all(files.map(async (file) => {
-        const frontmatter = await pages.api.frontmatterForPageOrFile(file)
-        frontmatter.meta.filename ||= file
-        return frontmatter
-      }))
+      let data = await Promise.all(
+        files.map(async (file) => {
+          const frontmatter = await pages.api.frontmatterForPageOrFile(file)
+          frontmatter.meta.filename ||= file
+          return frontmatter
+        }),
+      )
 
       // Filter drafts from documents if needed.
-      if (!drafts)
-        data = data.filter(page => !page.draft)
+      if (!drafts) data = data.filter((page) => !page.draft)
       debug.documents(`${files.length} files, ${data.length} documents, drafts: ${drafts}`)
 
       // Create the structure of each document in the default export.
@@ -110,7 +116,7 @@ export default function documentsPlugin (config: AppConfig): Plugin {
         }
       `
     },
-    async transform (code, id) {
+    async transform(code, id) {
       // Replace each usage of useDocuments with an import of a virtual module.
       if (fileCanUseDocuments.test(id) && !definitionRegex.test(code)) {
         const paths: [string, string][] = []
@@ -121,14 +127,15 @@ export default function documentsPlugin (config: AppConfig): Plugin {
           return id
         })
         if (paths.length) {
-          const imports = paths.map(([id, path]) =>
-            `import ${id} from '${DOCS_VIRTUAL_ID}?pattern=${path}'`)
+          const imports = paths.map(
+            ([id, path]) => `import ${id} from '${DOCS_VIRTUAL_ID}?pattern=${path}'`,
+          )
 
           return `${code};${imports.join(';')}`
         }
       }
     },
-    hotUpdate ({ file, modules }) {
+    hotUpdate({ file, modules }) {
       const relFile = relative(root, file)
       const extra: typeof modules = []
 

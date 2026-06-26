@@ -3,8 +3,11 @@ defineProps({ grid: { type: Boolean, default: false } })
 </script>
 
 <template>
-  <div :class="{ content: grid }" class="container !max-w-screen-2xl lg:px-6 mx-auto pt-$navbar-height">
-    <slot/>
+  <div
+    :class="{ content: grid }"
+    class="container !max-w-screen-2xl lg:px-6 mx-auto pt-$navbar-height"
+  >
+    <slot />
   </div>
 </template>
 

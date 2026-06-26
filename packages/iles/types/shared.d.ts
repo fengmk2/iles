@@ -1,4 +1,9 @@
-import type { ResolveFn, UserConfig as ViteOptions, ConfigEnv, PluginOption as VitePluginOption } from 'vite'
+import type {
+  ResolveFn,
+  UserConfig as ViteOptions,
+  ConfigEnv,
+  PluginOption as VitePluginOption,
+} from 'vite-plus'
 import type { GetModuleInfo } from 'rolldown'
 import type { App, Ref, DefineComponent, VNode, AsyncComponentLoader } from 'vue'
 import type { Plugin as VuePlugin, Options as VueOptions } from '@vitejs/plugin-vue'
@@ -9,11 +14,20 @@ import type { Options as RequiredSolidOptions } from 'vite-plugin-solid'
 import type { Options as SvelteOptions } from '@sveltejs/vite-plugin-svelte'
 import type { PreactPluginOptions as PreactOptions } from '@preact/preset-vite'
 
-import type { Router, RouteRecordRaw, RouteMeta, RouterOptions as VueRouterOptions, RouteComponent, RouteRecordNormalized, RouteLocationNormalizedLoaded, RouteParams } from 'vue-router'
+import type {
+  Router,
+  RouteRecordRaw,
+  RouteMeta,
+  RouterOptions as VueRouterOptions,
+  RouteComponent,
+  RouteRecordNormalized,
+  RouteLocationNormalizedLoaded,
+  RouteParams,
+} from 'vue-router'
 import type { HeadClient, HeadObject } from '@unhead/vue'
 import type { PagesApi, PagesOptions, PageFrontmatter, PageMeta } from '@islands/pages'
 export type { RawPageMatter, PageFrontmatter, PageMeta } from '@islands/pages'
-export type { OnLoadFn } from '@islands/hydration/dist/vanilla'
+export type { OnLoadFn } from '@islands/hydration/vanilla'
 
 import type { MarkdownOptions } from '@islands/mdx'
 
@@ -27,11 +41,7 @@ export interface PageProps extends Record<string, any> {}
 
 type SolidOptions = Partial<RequiredSolidOptions>
 
-export type {
-  PreactOptions,
-  SolidOptions,
-  SvelteOptions,
-}
+export type { PreactOptions, SolidOptions, SvelteOptions }
 
 interface WithFrontmatter extends PageFrontmatter, PageMeta {
   frontmatter: PageFrontmatter
@@ -46,9 +56,10 @@ export interface PageComponent extends RouteComponent, WithFrontmatter {
   render?: (props?: any) => VNode<any, any, any>
 }
 
-export type Document<T = void> = AsyncComponentLoader<PageComponent & T> & WithFrontmatter & {
-  component: () => Promise<PageComponent & T>
-} & T
+export type Document<T = void> = AsyncComponentLoader<PageComponent & T> &
+  WithFrontmatter & {
+    component: () => Promise<PageComponent & T>
+  } & T
 
 export interface PageData<T = PageProps> {
   readonly page: Ref<PageComponent>
@@ -96,7 +107,9 @@ export interface GetStaticPathsArgs {
   route: RouteLocationNormalizedLoaded | RouteRecordNormalized
 }
 
-export type GetStaticPaths<T = any> = (args: GetStaticPathsArgs) => StaticPath<T>[] | Promise<StaticPath<T>[]>
+export type GetStaticPaths<T = any> = (
+  args: GetStaticPathsArgs,
+) => StaticPath<T>[] | Promise<StaticPath<T>[]>
 
 export type CreateAppFactory = (options?: CreateAppConfig) => Promise<AppContext>
 
@@ -152,7 +165,10 @@ export interface BaseIlesConfig extends PagesOptions {
      * This hook will be invoked before îles renders a page.
      * Plugins may alter the rendered HTML
      */
-    beforePageRender?: (page: RouteToRender, config: AppConfig) => RouteToRender | void | Promise<void | RouteToRender>
+    beforePageRender?: (
+      page: RouteToRender,
+      config: AppConfig,
+    ) => RouteToRender | void | Promise<void | RouteToRender>
     /**
      * This hook will be invoked once îles has bundled client, SSR, and islands.
      */
@@ -176,7 +192,10 @@ export interface BaseIlesConfig extends PagesOptions {
 
 export interface IlesModule extends Partial<BaseIlesConfig> {
   name: string
-  config?: (config: UserConfig, env: ConfigEnv) => UserConfig | null | void | Promise<UserConfig | null | void>
+  config?: (
+    config: UserConfig,
+    env: ConfigEnv,
+  ) => UserConfig | null | void | Promise<UserConfig | null | void>
   configResolved?: (config: AppConfig, env: ConfigEnv) => void | Promise<void>
 }
 
@@ -186,7 +205,9 @@ export type MDXComponents = Record<string, any>
 export interface UserApp {
   head?: HeadConfig | ((ctx: EnhanceAppContext) => HeadConfig)
   enhanceApp?: (ctx: EnhanceAppContext) => void | Promise<void>
-  mdxComponents?: MDXComponents | ((ctx: EnhanceAppContext) => MDXComponents | Promise<MDXComponents>)
+  mdxComponents?:
+    | MDXComponents
+    | ((ctx: EnhanceAppContext) => MDXComponents | Promise<MDXComponents>)
   router?: Omit<VueRouterOptions, 'history', 'routes'>
   socialTags?: boolean
 }

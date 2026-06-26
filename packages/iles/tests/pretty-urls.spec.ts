@@ -17,7 +17,9 @@ describe('prettyUrls', () => {
     expectExplicitPath('/about#contact').toEqual('/about.html#contact')
     expectExplicitPath('/about/index.html#contact').toEqual('/about/#contact')
 
-    expectExplicitPath('https://example.com/about#contact').toEqual('https://example.com/about#contact')
+    expectExplicitPath('https://example.com/about#contact').toEqual(
+      'https://example.com/about#contact',
+    )
     expectExplicitPath('https://example.com/#contact').toEqual('https://example.com/#contact')
   })
 

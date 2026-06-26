@@ -3,7 +3,7 @@ import { init as initESLexer, parse as parseESModules } from 'es-module-lexer'
 import MagicString from 'magic-string'
 import type { AppConfig } from '../shared'
 
-export default async function rebaseImports ({ base, assetsDir }: AppConfig, codeStr: string) {
+export default async function rebaseImports({ base, assetsDir }: AppConfig, codeStr: string) {
   const assetsBase = posix.join(base, assetsDir)
   try {
     await initESLexer
@@ -18,8 +18,7 @@ export default async function rebaseImports ({ base, assetsDir }: AppConfig, cod
       code.overwrite(s, e, posix.join(assetsBase, code.slice(s, e)), { contentOnly: true })
     })
     return code.toString()
-  }
-  catch (error) {
+  } catch (error) {
     console.error(error)
     return codeStr
   }

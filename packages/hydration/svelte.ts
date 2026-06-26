@@ -5,9 +5,15 @@ import { onDispose } from './hydration'
 
 type Component = any
 
-export default function createIsland (Component: Component, id: string, el: Element, props: Props, slots: Slots | undefined = {}) {
+export default function createIsland(
+  Component: Component,
+  id: string,
+  el: Element,
+  props: Props,
+  slots: Slots | undefined = {},
+) {
   let children
-  let $$slots: Record<string, Snippet> & { default?: boolean } | undefined
+  let $$slots: (Record<string, Snippet> & { default?: boolean }) | undefined
   let renderFns: Record<string, Snippet> = {}
 
   Object.entries(slots).forEach(([slotName, html]) => {
@@ -18,13 +24,11 @@ export default function createIsland (Component: Component, id: string, el: Elem
     if (slotName === 'default') {
       $$slots.default = true
       children = renderFns[fnName]
-    }
-    else {
+    } else {
       $$slots[fnName] = renderFns[fnName]
     }
   })
 
-   
   const component = mount(Component, {
     target: el,
     props: {
@@ -33,11 +37,17 @@ export default function createIsland (Component: Component, id: string, el: Elem
       $$slots,
       ...renderFns,
     },
-  });
+  })
 
-  if (import.meta.env.DISPOSE_ISLANDS)
-    onDispose(id, () => unmount(component))
+  if (import.meta.env.DISPOSE_ISLANDS) onDispose(id, () => unmount(component))
 
   if (import.meta.env.DEV)
-    (window as any).__ILE_DEVTOOLS__?.onHydration({ id, el, props, slots, component, framework: 'svelte' })
+    (window as any).__ILE_DEVTOOLS__?.onHydration({
+      id,
+      el,
+      props,
+      slots,
+      component,
+      framework: 'svelte',
+    })
 }

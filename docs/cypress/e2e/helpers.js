@@ -13,8 +13,7 @@ export const visit = (path) => {
   waitForHydration()
 }
 
-export const visitHome = () =>
-  visit('/')
+export const visitHome = () => visit('/')
 
 export const goBackHome = () => {
   cy.go('back')

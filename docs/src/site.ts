@@ -8,7 +8,16 @@ const site = {
   url: 'https://iles-docs.netlify.app',
   canonical: 'iles-docs.netlify.app',
 
-  tags: ['îles', 'iles', 'vuejs', 'vitejs', 'ssg', 'open source', 'partial hydration', 'islands of interactivity'],
+  tags: [
+    'îles',
+    'iles',
+    'vuejs',
+    'vitejs',
+    'ssg',
+    'open source',
+    'partial hydration',
+    'islands of interactivity',
+  ],
 
   author: 'Máximo Mussini',
   authorUrl: 'https://maximomussini.com',

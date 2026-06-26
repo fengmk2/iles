@@ -15,7 +15,7 @@ export default defineConfig({
       cssExtend: {
         '.prose pre': {
           'background-color': '#1f2937 !important',
-          'color': '#e5e7eb !important',
+          color: '#e5e7eb !important',
         },
       },
     }),

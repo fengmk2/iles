@@ -21,7 +21,6 @@
 [îles]: https://github.com/ElMassimo/iles
 [docs]: https://iles-docs.netlify.app
 [markdown]: https://iles-docs.netlify.app/guide/markdown
-
 [pageData]: https://iles-docs.netlify.app/guide/development#using-page-data
 [SEO tags]: https://iles-docs.netlify.app/guide/meta-tags
 [RSS feeds]: https://iles-docs.netlify.app/guide/rss
@@ -34,7 +33,6 @@ An [îles] module to extract an excerpt from [MDX documents][markdown]:
 
 - ⚙️ `maxLength`, `separator`, and `extract` options to customize excerpt
 
-
 ### Installation 💿
 
 ```ts
@@ -42,9 +40,7 @@ An [îles] module to extract an excerpt from [MDX documents][markdown]:
 import { defineConfig } from 'iles'
 
 export default defineConfig({
-  modules: [
-    ['@islands/excerpt', { maxLength: 140 }],
-  ],
+  modules: [['@islands/excerpt', { maxLength: 140 }]],
 })
 ```
 
@@ -68,9 +64,9 @@ const pages = useDocuments('~/pages/posts')
 </script>
 
 <template>
-  <Introduction excerpt/>
+  <Introduction excerpt />
   <template v-for="page in pages">
-    <component :is="page" excerpt/>
+    <component :is="page" excerpt />
   </template>
 </template>
 ```

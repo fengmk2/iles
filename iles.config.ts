@@ -5,9 +5,7 @@ const testConfig = {
   test: {
     server: {
       deps: {
-        inline: [
-          '@vue/devtools-api',
-        ],
+        inline: ['@vue/devtools-api'],
       },
     },
   },
@@ -22,7 +20,7 @@ export default defineConfig({
       alias: {
         'iles/jsx-runtime': `${__dirname}/packages/iles/jsx-runtime.js`,
         'iles/turbo': `${__dirname}/packages/iles/turbo.js`,
-        'iles': `${__dirname}/packages/iles/src/client/index.ts`,
+        iles: `${__dirname}/packages/iles/src/client/index.ts`,
         '@components/': `${__dirname}/packages/iles/src/client/app/components/`,
         '@node/': `${__dirname}/packages/iles/src/node/`,
         '@mdx/': `${__dirname}/packages/mdx/src/`,

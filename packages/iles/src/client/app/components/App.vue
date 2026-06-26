@@ -12,9 +12,8 @@ export default defineComponent({
     DebugPanel,
     Head,
   },
-  setup () {
-    if (import.meta.env.DEV && !import.meta.env.SSR)
-      useRouterLinks()
+  setup() {
+    if (import.meta.env.DEV && !import.meta.env.SSR) useRouterLinks()
 
     const { page, route, props } = usePage()
 
@@ -33,25 +32,25 @@ export default defineComponent({
       props,
     }
   },
-  mounted () {
-    (window as any).__ILE_DISPOSE__ ||= new Map()
+  mounted() {
+    ;(window as any).__ILE_DISPOSE__ ||= new Map()
   },
 })
 </script>
 
 <template>
   <Head>
-    <meta property="generator" content="îles">
+    <meta property="generator" content="îles" />
   </Head>
   <Suspense>
     <router-view>
-      <component :is="page" v-if="layout === false" v-bind="props"/>
+      <component :is="page" v-if="layout === false" v-bind="props" />
       <component :is="layout" v-else>
         <template #default="layoutProps">
-          <component :is="page" v-bind="{ ...layoutProps, ...props }"/>
+          <component :is="page" v-bind="{ ...layoutProps, ...props }" />
         </template>
       </component>
     </router-view>
   </Suspense>
-  <DebugPanel/>
+  <DebugPanel />
 </template>

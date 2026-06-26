@@ -58,12 +58,10 @@ export default defineConfig({
     }),
   ],
   markdown: {
-    rehypePlugins: [
-      'rehype-external-links',
-    ],
+    rehypePlugins: ['rehype-external-links'],
   },
   ssg: {
-    manualChunks (id, api) {
+    manualChunks(id, api) {
       if (id.includes('preact') || id.includes('algolia') || id.toLowerCase().includes('docsearch'))
         return 'docsearch'
     },
@@ -77,7 +75,7 @@ export default defineConfig({
     plugins: [
       reactivityTransform(),
       UnoCSS() as any,
-      Boolean(process.env.DEBUG) && inspect() as any,
+      Boolean(process.env.DEBUG) && (inspect() as any),
     ],
   },
 })

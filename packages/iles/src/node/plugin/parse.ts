@@ -4,7 +4,7 @@ import type { Awaited } from '../shared'
 
 export type ImportsMetadata = Record<string, ComponentInfo>
 
-export function parseId (id: string) {
+export function parseId(id: string) {
   const index = id.indexOf('?')
   if (index < 0) return { path: id, query: {} }
 
@@ -13,18 +13,17 @@ export function parseId (id: string) {
   return { path: id.slice(0, index), query }
 }
 
-export async function parseExports (code: string) {
+export async function parseExports(code: string) {
   try {
     await initESLexer
-    return parseESModules(code)[1].map(spec => spec.n)
-  }
-  catch (error) {
+    return parseESModules(code)[1].map((spec) => spec.n)
+  } catch (error) {
     console.error(error)
     return []
   }
 }
 
-export async function parseImports (code: string) {
+export async function parseImports(code: string) {
   try {
     await initESLexer
 
@@ -38,8 +37,7 @@ export async function parseImports (code: string) {
       })
     })
     return importMap
-  }
-  catch (error) {
+  } catch (error) {
     console.error(error)
     return {}
   }
@@ -48,19 +46,24 @@ export async function parseImports (code: string) {
 export type ParsedImports = Awaited<ReturnType<typeof parseImports>>
 
 const importStatementRegex = /import\s*(.*?)\s*from['"\s]+$/s
-const importVarRegex = /(?:\{\s*((?:[^,}]+[,\s]*)+)\}|([^,]+))(?:[,\s]*|\s*$)+/sg
+const importVarRegex = /(?:\{\s*((?:[^,}]+[,\s]*)+)\}|([^,]+))(?:[,\s]*|\s*$)+/gs
 const trim = (s: string) => s.trim()
 
-export function parseImportVariables (partialStatement: string) {
+export function parseImportVariables(partialStatement: string) {
   const variablesStr = partialStatement.match(importStatementRegex)?.[1].trim()
   if (!variablesStr) return [] // Example: import '~/styles/main.css'
 
-  const variables = Array.from(variablesStr.matchAll(importVarRegex))
-    .flatMap(([, inBrackets, outer]) => {
-      if (inBrackets) return inBrackets.split(',').map(trim).filter(x => x)
+  const variables = Array.from(variablesStr.matchAll(importVarRegex)).flatMap(
+    ([, inBrackets, outer]) => {
+      if (inBrackets)
+        return inBrackets
+          .split(',')
+          .map(trim)
+          .filter((x) => x)
       outer = outer.trim()
       return outer.includes(' as ') ? outer : `default as ${outer}`
-    })
+    },
+  )
 
-  return variables.map(variable => variable.split(' as ').map(trim))
+  return variables.map((variable) => variable.split(' as ').map(trim))
 }

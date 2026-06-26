@@ -5,23 +5,23 @@ import type { MdxJsxTextElement, MdxJsxFlowElement } from 'mdast-util-mdx-jsx'
 const urlPattern = /^(https?:)?\//
 const externalUrlPattern = /^(https?:)?\/\//
 
-export function isAbsolute (url: string) {
+export function isAbsolute(url: string) {
   return urlPattern.test(url)
 }
 
-export function isExternal (url: string) {
+export function isExternal(url: string) {
   return externalUrlPattern.test(url)
 }
 
-export function isJsxElement (node: Node): node is MdxJsxTextElement | MdxJsxFlowElement {
+export function isJsxElement(node: Node): node is MdxJsxTextElement | MdxJsxFlowElement {
   return node.type === 'mdxJsxTextElement' || node.type === 'mdxJsxFlowElement'
 }
 
-export function isString (val: any): val is string {
+export function isString(val: any): val is string {
   return typeof val === 'string'
 }
 
-export function toExplicitHtmlPath (url: string) {
+export function toExplicitHtmlPath(url: string) {
   if (isExternal(url)) return url
 
   let [path, anchor] = url.split('#', 2)

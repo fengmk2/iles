@@ -14,9 +14,7 @@ type TurboScript = Script & { once: true }
 export default defineApp({
   head: {
     htmlAttrs: { lang: 'en-US' },
-    script: [
-      { children: checkDarkTheme, once: true } as TurboScript,
-    ],
+    script: [{ children: checkDarkTheme, once: true } as TurboScript],
   },
   mdxComponents: {
     img: Image,

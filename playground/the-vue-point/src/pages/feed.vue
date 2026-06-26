@@ -17,31 +17,30 @@ const options: FeedOptions = {
   language: 'en',
   image: 'https://vuejs.org/images/logo.png',
   favicon: `${url}/favicon.ico`,
-  copyright:
-    'Copyright (c) 2021-present, Yuxi (Evan) You and blog contributors',
+  copyright: 'Copyright (c) 2021-present, Yuxi (Evan) You and blog contributors',
 }
 
 const posts = $(getPosts())
-const items = $computed(() => posts.map(async (doc) => {
-  const post = await doc.component()
-  return {
-    title: post.title,
-    link: `${url}${post.href}`,
-    date: post.date,
-    description: () => post.excerpt,
-    content: post,
-    author: [
-      {
-        name: post.author,
-        link: post.twitter
-          ? `https://twitter.com/${post.twitter}`
-          : undefined,
-      },
-    ],
-  } as FeedItem
-}))
+const items = $computed(() =>
+  posts.map(async (doc) => {
+    const post = await doc.component()
+    return {
+      title: post.title,
+      link: `${url}${post.href}`,
+      date: post.date,
+      description: () => post.excerpt,
+      content: post,
+      author: [
+        {
+          name: post.author,
+          link: post.twitter ? `https://twitter.com/${post.twitter}` : undefined,
+        },
+      ],
+    } as FeedItem
+  }),
+)
 </script>
 
 <template>
-  <RenderFeed format="rss" v-bind="{ options, items }"/>
+  <RenderFeed format="rss" v-bind="{ options, items }" />
 </template>

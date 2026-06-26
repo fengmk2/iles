@@ -6,8 +6,7 @@ describe('Dark Mode', () => {
   }
 
   const assertTheme = (theme) =>
-    cy.get('html').then((html) =>
-      expect(html.hasClass('dark')).to.equal(theme === 'dark'))
+    cy.get('html').then((html) => expect(html.hasClass('dark')).to.equal(theme === 'dark'))
 
   it('can toggle on and off', () => {
     visitHome()

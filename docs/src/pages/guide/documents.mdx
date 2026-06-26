@@ -29,10 +29,13 @@ useDocuments('~/pages/(posts|articles)/*.{md,mdx}')
 Changes to each document and its `frontmatter` are instantly reflected.
 
 It does not require a full page reload when files matching the pattern are added or removed.
+
 </Tip>
 
 <Tip title="Only String Literals" warn>
-Just like [glob imports][glob] in Vite.js, you need to provide a string pattern directly, variables are not supported as it wouldn't be possible to perform static analysis and infer which files to build.
+  Just like [glob imports][glob] in Vite.js, you need to provide a string pattern directly,
+  variables are not supported as it wouldn't be possible to perform static analysis and infer which
+  files to build.
 </Tip>
 
 ## Using Data in Documents
@@ -51,7 +54,7 @@ const posts = useDocuments('~/pages/posts')
     <h2>
       <a :href="post.href">{{ post.title }}</a>
     </h2>
-    <component :is="post" excerpt/>
+    <component :is="post" excerpt />
   </article>
 </template>
 ```
@@ -65,11 +68,12 @@ You can render each document by passing it directly to `<component>`.
 Any `frontmatter` and `meta` properties will be typed, including extensions you have declared for `PageMeta` or `PageFrontmatter`.
 
 ```ts
-function usePosts () {
+function usePosts() {
   return useDocuments<Post>('~/pages/posts')
 }
 // typeof usePosts === ComputedRef<Post[]>
 ```
+
 ```ts
 post.href // string
 post.meta // PageMeta
@@ -81,7 +85,7 @@ post.frontmatter // PageFrontmatter
 Since <kbd>useDocuments</kbd> returns a `Ref`, when accessing documents in a script you would do:
 
 ```ts
-export function usePosts () {
+export function usePosts() {
   const posts = useDocuments('~/pages/posts')
   return computed(() => posts.value.sort(byDate))
 }
@@ -89,6 +93,6 @@ export function usePosts () {
 
 ## Comparison with `import.meta.glob`
 
-- Significantly __faster__ than `import.meta.glob('./dir/*.mdx', { eager: true })`, as it serves a single file
-- Can use any __aliases__ you have defined in Vite, no need to use relative paths
+- Significantly **faster** than `import.meta.glob('./dir/*.mdx', { eager: true })`, as it serves a single file
+- Can use any **aliases** you have defined in Vite, no need to use relative paths
 - Does not reload the page when files are added or removed

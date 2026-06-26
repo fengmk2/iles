@@ -1,11 +1,9 @@
 import { assertPage, visit, visitHome, waitForHydration } from './helpers'
 
 describe('Sidebar Toggle', () => {
-  const sidebar = () =>
-    cy.get('#sidebar-panel')
+  const sidebar = () => cy.get('#sidebar-panel')
 
-  const sidebarToggle = () =>
-    cy.get(`button[aria-label="Toggle Sidebar"]`)
+  const sidebarToggle = () => cy.get(`button[aria-label="Toggle Sidebar"]`)
 
   const openSidebar = () => {
     sidebarToggle().click()

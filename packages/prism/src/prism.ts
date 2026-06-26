@@ -25,13 +25,11 @@ export interface PrismOptions {
 /**
  * An iles module that injects a remark plugin to to provide syntax highlighting.
  */
-export default function IlesPrism (options?: PrismOptions): IlesModule {
+export default function IlesPrism(options?: PrismOptions): IlesModule {
   return {
     name: '@islands/prism',
     markdown: {
-      remarkPlugins: [
-        [remarkPlugin, options],
-      ],
+      remarkPlugins: [[remarkPlugin, options]],
     },
   }
 }
@@ -42,7 +40,9 @@ export default function IlesPrism (options?: PrismOptions): IlesModule {
  *
  * @param options - Options to configure PrismJS.
  */
-const remarkPlugin: Plugin<[PrismOptions], Root> = function RemarkPrismPlugin (options: PrismOptions = {}) {
+const remarkPlugin: Plugin<[PrismOptions], Root> = function RemarkPrismPlugin(
+  options: PrismOptions = {},
+) {
   const languageShortcuts = { ...defaultLanguageShortcuts, ...options.alias }
 
   return (ast) => {
@@ -51,61 +51,71 @@ const remarkPlugin: Plugin<[PrismOptions], Root> = function RemarkPrismPlugin (o
       const grammar = languageGrammarFor(languageShortcuts[lang] || lang)
       if (grammar) {
         const codeHtml = highlightCode(node.value, grammar, lang, node.meta || '', options)
-        parent!.children[index!] = { type: 'mdxFlowExpression', value: codeHtml, data: { raw: true, count: 1 } } as any
+        parent!.children[index!] = {
+          type: 'mdxFlowExpression',
+          value: codeHtml,
+          data: { raw: true, count: 1 },
+        } as any
       }
       return SKIP
     })
   }
 }
 
-function highlightCode (code: string, grammar: Grammar, lang: string, meta: string, options: PrismOptions) {
+function highlightCode(
+  code: string,
+  grammar: Grammar,
+  lang: string,
+  meta: string,
+  options: PrismOptions,
+) {
   code = prism.highlight(code, grammar, lang)
 
   const highlightLine = extractLineNumbers(meta)
-  const showLineNumbers = (options.showLineNumbers && !meta.includes('hideLineNumbers')) || meta.includes('showLineNumbers')
+  const showLineNumbers =
+    (options.showLineNumbers && !meta.includes('hideLineNumbers')) ||
+    meta.includes('showLineNumbers')
   const lines = showLineNumbers || highlightLine ? code.split('\n') : []
 
-  const classes = [
-    `language-${lang}`,
-    showLineNumbers && 'line-numbers-mode',
-  ].filter(x => x).join(' ')
+  const classes = [`language-${lang}`, showLineNumbers && 'line-numbers-mode']
+    .filter((x) => x)
+    .join(' ')
 
   const innerHtml = [
     highlightLine && `<pre class="line-highlight">${highlightLines(lines, highlightLine)}</pre>`,
     `<pre class="language-${lang}"><code>${code}</code></pre>`,
     showLineNumbers && `<pre class="line-numbers">${addLineNumbers(lines)}</pre>`,
-  ].filter(x => x).join('')
+  ]
+    .filter((x) => x)
+    .join('')
 
   return `<div class="${classes}" data-lang="${lang === 'text' ? '' : lang}">${innerHtml}</div>`
 }
 
-function highlightLines (lines: string[], highlighted: (line: number) => boolean) {
+function highlightLines(lines: string[], highlighted: (line: number) => boolean) {
   return lines
-    .map((_, index) => highlighted(index + 1) ? '<div class="highlighted">&nbsp;</div>' : '<br>')
+    .map((_, index) => (highlighted(index + 1) ? '<div class="highlighted">&nbsp;</div>' : '<br>'))
     .join('')
 }
 
-function addLineNumbers (lines: string[]) {
-  return lines
-    .map((_, index) => `<span class="line-number">${index + 1}</span><br>`)
-    .join('')
+function addLineNumbers(lines: string[]) {
+  return lines.map((_, index) => `<span class="line-number">${index + 1}</span><br>`).join('')
 }
 
-function extractLineNumbers (meta: string) {
+function extractLineNumbers(meta: string) {
   const rangesStr = meta.match(/\{(.*?)\}/)?.[1]
   if (rangesStr) {
-    const ranges = rangesStr.split(',').map(v => v.split('-').map(v => parseInt(v, 10)))
+    const ranges = rangesStr.split(',').map((v) => v.split('-').map((v) => parseInt(v, 10)))
     return (line: number) =>
-      ranges.some(([start, end]) => end ? line >= start && line <= end : line === start)
+      ranges.some(([start, end]) => (end ? line >= start && line <= end : line === start))
   }
 }
 
-function languageGrammarFor (lang: string): undefined | Grammar {
+function languageGrammarFor(lang: string): undefined | Grammar {
   if (!prism.languages[lang]) {
     try {
       loadLanguages([lang])
-    }
-    catch (e) {
+    } catch (e) {
       console.warn(`[prismjs] Syntax highlight for language "${lang}" is not supported.`)
     }
   }

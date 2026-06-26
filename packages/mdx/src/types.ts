@@ -8,7 +8,10 @@ import type { VFile } from 'vfile'
 export type PluginLike = null | undefined | false | Pluggable
 export type PluginOption = PluginLike | Promise<PluginLike> | string | [string, any]
 
-export interface MarkdownOptions extends Omit<CompileOptions, 'remarkPlugins' | 'rehypePlugins' | 'recmaPlugins'> {
+export interface MarkdownOptions extends Omit<
+  CompileOptions,
+  'remarkPlugins' | 'rehypePlugins' | 'recmaPlugins'
+> {
   /**
    * Recma plugins that should be used to process files.
    */

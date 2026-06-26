@@ -19,7 +19,8 @@
     "release": "tsx scripts/release.ts",
     "changelog": "tsx scripts/changelog.ts",
     "pkg-size": "tsx scripts/pkg-size.ts",
-    "test": "packages/iles/bin/iles.js test"
+    "test": "packages/iles/bin/iles.js test",
+    "prepare": "vp config"
   },
   "devDependencies": {
     "@nrwl/cli": "15.9.3",
@@ -35,7 +36,22 @@
     "semver": "^7.6.3",
     "tsx": "^4.19.2",
     "typescript": "^5.6.3",
-    "vite-plus": "^0.1.14"
+    "vite": "catalog:",
+    "vite-plus": "catalog:"
   },
-  "packageManager": "pnpm@9.8.0"
+  "packageManager": "pnpm@9.8.0",
+  "pnpm": {
+    "overrides": {
+      "vite": "https://pkg.pr.new/voidzero-dev/vite-plus/@voidzero-dev/vite-plus-core@eadfb3dec203530d065ae4390288b029108d5baf",
+      "vite-plus": "https://pkg.pr.new/voidzero-dev/vite-plus@eadfb3dec203530d065ae4390288b029108d5baf"
+    },
+    "peerDependencyRules": {
+      "allowAny": [
+        "vite"
+      ],
+      "allowedVersions": {
+        "vite": "*"
+      }
+    }
+  }
 }

@@ -39,8 +39,6 @@ An [îles] module that injects a [rehype] plugin to parse headings in
 import { defineConfig } from 'iles'
 
 export default defineConfig({
-  modules: [
-    '@islands/headings',
-  ],
+  modules: ['@islands/headings'],
 })
 ```

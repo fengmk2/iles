@@ -14,32 +14,25 @@ const saveData = conn && (conn.saveData || /2g/.test(conn.effectiveType))
 
 const toArray = Array.from
 
-const queryAll = (selector, el = dom) =>
-  toArray(el.querySelectorAll(selector))
+const queryAll = (selector, el = dom) => toArray(el.querySelectorAll(selector))
 
-const adoptNode = node =>
-  dom.adoptNode(node)
+const adoptNode = (node) => dom.adoptNode(node)
 
-const createElement = (tagName = 'link') =>
-  dom.createElement(tagName)
+const createElement = (tagName = 'link') => dom.createElement(tagName)
 
 const whenIdle = window.requestIdleCallback || setTimeout
 
-const normalizeURL = url =>
-  new URL(url, location.href).pathname
+const normalizeURL = (url) => new URL(url, location.href).pathname
 
-const prefetchNow = (url, importance = 'high') =>
-  fetch(url, { credentials: 'include', importance })
+const prefetchNow = (url, importance = 'high') => fetch(url, { credentials: 'include', importance })
 
-const prefetchWhenIdle = hasPrefetch()
-  ? prefetchWithLinkTag
-  : url => prefetchNow(url, 'low')
+const prefetchWhenIdle = hasPrefetch() ? prefetchWithLinkTag : (url) => prefetchNow(url, 'low')
 
 // Cache of URLs and Promises we've prefetched
 const hasFetched = new Set()
 hasFetched.add(normalizeURL(location.href))
 
-function prefetch (url) {
+function prefetch(url) {
   if (!saveData && !hasFetched.has(url)) {
     hasFetched.add(url)
     prefetchWhenIdle(url)
@@ -56,7 +49,7 @@ addEventListener('popstate', (e) => {
  * Detect links in the viewport and prefetch them, and intercept clicks to them
  * to perform a turbolinks-style replacement of the page.
  */
-function watchLinks () {
+function watchLinks() {
   window.__ILE_DISPOSE__ = new Map()
   observer?.disconnect()
 
@@ -79,14 +72,20 @@ function watchLinks () {
   })
 }
 
-function onLinkClick (e) {
+function onLinkClick(e) {
   const link = e.target.closest('a')
-  if (!e.ctrlKey && !e.shiftKey && !e.altKey && !e.metaKey && event.which <= 1 && link.target !== '_blank') {
+  if (
+    !e.ctrlKey &&
+    !e.shiftKey &&
+    !e.altKey &&
+    !e.metaKey &&
+    event.which <= 1 &&
+    link.target !== '_blank'
+  ) {
     const sameLocation = link.pathname === location.pathname
     const sameHash = link.hash === location.hash
 
-    if (!sameLocation || sameHash)
-      e.preventDefault()
+    if (!sameLocation || sameHash) e.preventDefault()
 
     if (!sameLocation) {
       replacePage(link.href, 0, () => {
@@ -97,30 +96,32 @@ function onLinkClick (e) {
   }
 }
 
-function replacePage (url, scrollPosition, callback) {
+function replacePage(url, scrollPosition, callback) {
   url = normalizeURL(url)
-  prefetchNow(url).then(p => p.text()).then((html) => {
-    callback?.()
-    currentPath = location.pathname
-    replaceHtml(html)
-    scrollTo(0, scrollPosition || dom.querySelector(location.hash || 'body').offsetTop)
-    watchLinks()
-  })
+  prefetchNow(url)
+    .then((p) => p.text())
+    .then((html) => {
+      callback?.()
+      currentPath = location.pathname
+      replaceHtml(html)
+      scrollTo(0, scrollPosition || dom.querySelector(location.hash || 'body').offsetTop)
+      watchLinks()
+    })
     .catch((e) => {
       console.error(e)
       location.href = url
     })
 }
 
-function replaceHtml (html) {
+function replaceHtml(html) {
   const { head, body } = new DOMParser().parseFromString(html, 'text/html')
 
   const prevHead = dom.head
-  queryAll(':not(link[rel="stylesheet"]):not(style)', prevHead).forEach(el => el.remove())
+  queryAll(':not(link[rel="stylesheet"]):not(style)', prevHead).forEach((el) => el.remove())
 
-  const prevHeadHrefs = new Set(queryAll('link', prevHead).map(el => el.href))
+  const prevHeadHrefs = new Set(queryAll('link', prevHead).map((el) => el.href))
   toArray(head.children).forEach((el) => {
-    if (el.tagName !== 'LINK' || el.rel !== 'stylesheet' || !prevHeadHrefs.has(el.href)){
+    if (el.tagName !== 'LINK' || el.rel !== 'stylesheet' || !prevHeadHrefs.has(el.href)) {
       adoptNode(el)
       prevHead.appendChild(el)
     }
@@ -132,16 +133,15 @@ function replaceHtml (html) {
   activateScripts(body)
 }
 
-function activateScripts (el) {
+function activateScripts(el) {
   queryAll('script', el).forEach(activateScript)
 }
 
-function activateScript (el) {
+function activateScript(el) {
   if (el.getAttribute('once') === null) {
     const script = createElement('script')
 
-    toArray(el.attributes)
-      .forEach(attr => script.setAttribute(attr.nodeName, attr.nodeValue))
+    toArray(el.attributes).forEach((attr) => script.setAttribute(attr.nodeName, attr.nodeValue))
 
     script.textContent = el.textContent
 
@@ -149,12 +149,12 @@ function activateScript (el) {
   }
 }
 
-function hasPrefetch (link) {
+function hasPrefetch(link) {
   link = createElement()
   return link.relList && link.relList.supports && link.relList.supports('prefetch')
 }
 
-function prefetchWithLinkTag (url, link) {
+function prefetchWithLinkTag(url, link) {
   link = createElement()
   link.rel = 'prefetch'
   link.href = url

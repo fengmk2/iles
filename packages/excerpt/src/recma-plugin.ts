@@ -2,19 +2,26 @@ import { walk } from 'estree-walker'
 import type { Node, Statement, Program } from 'estree-jsx'
 import type { Plugin } from 'unified'
 
-import type { ArrayExpression, ConditionalExpression, Identifier, ObjectExpression, Property, VariableDeclaration } from 'estree'
+import type {
+  ArrayExpression,
+  ConditionalExpression,
+  Identifier,
+  ObjectExpression,
+  Property,
+  VariableDeclaration,
+} from 'estree'
 
 /**
  * A plugin that splits MDXContent into before/after excerpt separator, and
  * toggles rendering with an `excerpt` prop.
  */
-export const recmaPlugin: Plugin<[], Program> = function recmaExcerpt () {
+export const recmaPlugin: Plugin<[], Program> = function recmaExcerpt() {
   return (tree) => {
     let done = false
 
     walk(tree, {
       // @ts-ignore
-      enter (node: Node) {
+      enter(node: Node) {
         if (node.type === 'FunctionDeclaration' && node.id?.name === '_createMdxContent') {
           splitOnExcerptSeparator(node.body.body)
 
@@ -29,15 +36,20 @@ export const recmaPlugin: Plugin<[], Program> = function recmaExcerpt () {
   }
 }
 
-function splitOnExcerptSeparator (statements: Statement[]) {
+function splitOnExcerptSeparator(statements: Statement[]) {
   for (let index = statements.length - 1; index >= 0; index--) {
     const s = statements[index]
 
     if (s.type === 'ReturnStatement') {
-      const [id, childrenObj] = ((s.argument as any).arguments || []) as [Identifier, ObjectExpression]
+      const [id, childrenObj] = ((s.argument as any).arguments || []) as [
+        Identifier,
+        ObjectExpression,
+      ]
       if (id?.name === '_Fragment') {
         const childrenProp = childrenObj.properties[0] as Property
-        const [excerptElements, restElements] = splitExcerptElements(childrenProp.value as ArrayExpression)
+        const [excerptElements, restElements] = splitExcerptElements(
+          childrenProp.value as ArrayExpression,
+        )
         statements.splice(index, 0, declareExcerpt(excerptElements))
         childrenProp.value = conditionalExcerpt(restElements)
       }
@@ -46,9 +58,11 @@ function splitOnExcerptSeparator (statements: Statement[]) {
   }
 }
 
-function splitExcerptElements (childrenExpr: ArrayExpression) {
-  const excerptIndex = childrenExpr.elements.findIndex(node =>
-    node?.type === 'CallExpression' && (node.arguments[0] as any)?.property?.name === 'excerpt')
+function splitExcerptElements(childrenExpr: ArrayExpression) {
+  const excerptIndex = childrenExpr.elements.findIndex(
+    (node) =>
+      node?.type === 'CallExpression' && (node.arguments[0] as any)?.property?.name === 'excerpt',
+  )
   return [
     childrenExpr.elements.slice(0, excerptIndex),
     childrenExpr.elements.slice(excerptIndex + 1),
@@ -57,7 +71,7 @@ function splitExcerptElements (childrenExpr: ArrayExpression) {
 
 const excerptIdentifier: Identifier = { type: 'Identifier', name: '_excerpt' }
 
-function declareExcerpt (elements: ArrayExpression['elements']): VariableDeclaration {
+function declareExcerpt(elements: ArrayExpression['elements']): VariableDeclaration {
   return {
     kind: 'const',
     type: 'VariableDeclaration',
@@ -71,7 +85,7 @@ function declareExcerpt (elements: ArrayExpression['elements']): VariableDeclara
   }
 }
 
-function conditionalExcerpt (elements: ArrayExpression['elements']): ConditionalExpression {
+function conditionalExcerpt(elements: ArrayExpression['elements']): ConditionalExpression {
   return {
     type: 'ConditionalExpression',
     test: {
@@ -84,10 +98,7 @@ function conditionalExcerpt (elements: ArrayExpression['elements']): Conditional
     consequent: excerptIdentifier,
     alternate: {
       type: 'ArrayExpression',
-      elements: [
-        { type: 'SpreadElement', argument: excerptIdentifier },
-        ...elements,
-      ],
+      elements: [{ type: 'SpreadElement', argument: excerptIdentifier }, ...elements],
     },
   }
 }

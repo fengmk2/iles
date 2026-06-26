@@ -32,7 +32,7 @@ export const onLoad: OnLoadFn = () => {
 </template>
 
 <style scoped>
-#pwa-dialog[aria-hidden="true"] {
+#pwa-dialog[aria-hidden='true'] {
   display: none;
 }
 

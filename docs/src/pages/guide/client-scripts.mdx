@@ -13,7 +13,7 @@ There are two main ways to achieve this in <Iles/>.
 
 ## Client Script Block <VueLogo/>
 
-<Iles/> provides support for a `script client` block in Vue single-file components.
+<Iles /> provides support for a `script client` block in Vue single-file components.
 
 ```vue
 <script client:load lang="ts">
@@ -22,7 +22,8 @@ console.log('Powered by îles 🏝', 'https://iles-docs.netlify.app')
 ```
 
 <Tip warn>
-Client script blocks are completely detached from the Vue component, which will be statically pre-rendered. The [strategy] is applied to the script, __not__ the component.
+  Client script blocks are completely detached from the Vue component, which will be statically
+  pre-rendered. The [strategy] is applied to the script, __not__ the component.
 </Tip>
 
 The script will be injected every time the component is rendered, and it's
@@ -34,7 +35,7 @@ document.getElementById('sidebar').classList.toggle('live') // always works
 </script>
 
 <template>
-  <div id="sidebar"/>
+  <div id="sidebar" />
 </template>
 ```
 
@@ -51,7 +52,7 @@ This function will be called when the condition for the selected strategy is met
 <script client:visible lang="ts">
 console.log('Not necessarily visible')
 
-export function onLoad () {
+export function onLoad() {
   console.log('Now visible')
 }
 </script>
@@ -68,14 +69,12 @@ import GalleryPreloader from '~/logic/imagePreloader' // .ts
 </script>
 
 <template>
-  <GalleryPreloader client:visible/>
+  <GalleryPreloader client:visible />
   ...
 </template>
 ```
 
-<Tip warn>
-You must provide a `client:` [strategy] when using vanilla components.
-</Tip>
+<Tip warn>You must provide a `client:` [strategy] when using vanilla components.</Tip>
 
 Vanilla components should export a function to call when the selected
 [hydration strategy][strategy] is fulfilled.
@@ -99,4 +98,5 @@ The benefit is that vanilla JS doesn't require a runtime, so the final
 bundle size will be smaller.
 
 If your app already [uses a framework][frameworks] in some of the islands, then use whatever you find more natural.
+
 </Tip>

@@ -14,10 +14,18 @@ const supportedExtensions = new Set(['.html', '.xml', '.json', '.rss', '.atom'])
 
 const debug = createDebugger('iles:html-page-fallback')
 
-export function configureMiddleware (config: AppConfig, server: ViteDevServer, defaultLayoutPath: string) {
+export function configureMiddleware(
+  config: AppConfig,
+  server: ViteDevServer,
+  defaultLayoutPath: string,
+) {
   restartOnConfigChanges(config, server)
 
-  const htmlPagesMiddleware: Connect.NextHandleFunction = function ilesHtmlPagesMiddleware (req, res, next) {
+  const htmlPagesMiddleware: Connect.NextHandleFunction = function ilesHtmlPagesMiddleware(
+    req,
+    res,
+    next,
+  ) {
     let { url = '' } = req
 
     url = pathToHtmlFilename(url)
@@ -51,8 +59,7 @@ export function configureMiddleware (config: AppConfig, server: ViteDevServer, d
         res.statusCode = 200
         res.setHeader('content-type', 'text/javascript')
         res.end('export default false')
-      }
-      else if (supportedExtensions.has(extname(url))) {
+      } else if (supportedExtensions.has(extname(url))) {
         res.statusCode = 200
         res.setHeader('content-type', 'text/html')
 
@@ -69,21 +76,18 @@ export function configureMiddleware (config: AppConfig, server: ViteDevServer, d
 </html>`
         html = await server.transformIndexHtml(url, html, req.originalUrl)
         res.end(html)
-      }
-      else {
+      } else {
         next()
       }
     })
   }
 }
 
-async function restartOnConfigChanges (config: AppConfig, server: ViteDevServer) {
+async function restartOnConfigChanges(config: AppConfig, server: ViteDevServer) {
   const restartIfConfigChanged = async (path: string) => {
     if (path === config.configPath) {
       server.config.logger.info(
-        pc.green(
-          `${relative(process.cwd(), config.configPath)} changed, restarting server...`,
-        ),
+        pc.green(`${relative(process.cwd(), config.configPath)} changed, restarting server...`),
         { clear: true, timestamp: true },
       )
       await server.close()

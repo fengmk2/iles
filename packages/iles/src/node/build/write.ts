@@ -9,22 +9,30 @@ import type { renderPages } from './render'
 
 import { VIRTUAL_PREFIX, VIRTUAL_TURBO_ID } from './islands'
 
-export async function writePages (
+export async function writePages(
   config: AppConfig,
   islandsByPath: IslandsByPath,
   { routesToRender }: Awaited<ReturnType<typeof renderPages>>,
 ) {
   const manifest: Manifest = await parseManifest(config.outDir, islandsByPath)
 
-  await Promise.all(routesToRender.map(async route =>
-    await writeRoute(config, manifest, route, islandsByPath[route.path])))
+  await Promise.all(
+    routesToRender.map(
+      async (route) => await writeRoute(config, manifest, route, islandsByPath[route.path]),
+    ),
+  )
 
   const tempIslandFiles = await glob(join(config.outDir, `**/${VIRTUAL_PREFIX}*.js`))
   // Remove temporary island script files.
   for (const temp of tempIslandFiles) await fs.unlink(temp)
 }
 
-async function writeRoute (config: AppConfig, manifest: Manifest, route: RouteToRender, islands: IslandDefinition[] = []) {
+async function writeRoute(
+  config: AppConfig,
+  manifest: Manifest,
+  route: RouteToRender,
+  islands: IslandDefinition[] = [],
+) {
   let content = route.rendered
 
   if (route.outputFilename.endsWith('.html')) {
@@ -48,54 +56,57 @@ async function writeRoute (config: AppConfig, manifest: Manifest, route: RouteTo
 
       // Inline the script in the SSR'ed html to load the island.
       const rebasedCode = await rebaseImports(config, code)
-      content = content.replace(`<!--${island.placeholder}-->`,
+      content = content.replace(
+        `<!--${island.placeholder}-->`,
         // TODO: Remove additional script tag once Firefox is fixed
         // https://bugzilla.mozilla.org/show_bug.cgi?id=1737882
-        () => `<script></script><script type="module" async>${rebasedCode}</script>`)
+        () => `<script></script><script type="module" async>${rebasedCode}</script>`,
+      )
     }
 
     // Preload scripts for islands in the page.
-    route.rendered = content.replace('</head>', () => `${stringifyScripts(config, manifest, preloadScripts)}</head>`)
+    route.rendered = content.replace(
+      '</head>',
+      () => `${stringifyScripts(config, manifest, preloadScripts)}</head>`,
+    )
   }
 
-  route = await config.ssg.beforePageRender?.(route, config) || route
+  route = (await config.ssg.beforePageRender?.(route, config)) || route
 
   const filename = resolve(config.outDir, route.outputFilename)
   await fs.mkdir(dirname(filename), { recursive: true })
   await fs.writeFile(filename, route.rendered, 'utf-8')
 }
 
-function stringifyScripts ({ turbo, base }: AppConfig, manifest: Manifest, hrefs: string[]) {
-  return [
-    turbo && injectNavigation(base, manifest),
-    stringifyPreload(base, manifest, hrefs),
-  ].filter(x => x).join('')
+function stringifyScripts({ turbo, base }: AppConfig, manifest: Manifest, hrefs: string[]) {
+  return [turbo && injectNavigation(base, manifest), stringifyPreload(base, manifest, hrefs)]
+    .filter((x) => x)
+    .join('')
 }
 
-function injectNavigation (base: string, manifest: Manifest) {
+function injectNavigation(base: string, manifest: Manifest) {
   const src = manifest[VIRTUAL_TURBO_ID]?.file
   return src && `<script type="module" async src="${base}${src}"></script>`
 }
 
-function stringifyPreload (base: string, manifest: Manifest, hrefs: string[]) {
+function stringifyPreload(base: string, manifest: Manifest, hrefs: string[]) {
   return uniq(resolveManifestEntries(manifest, hrefs))
-    .map(href => `<link rel="modulepreload" href="${base}${href}" crossorigin/>`)
+    .map((href) => `<link rel="modulepreload" href="${base}${href}" crossorigin/>`)
     .join('')
 }
 
-function resolveManifestEntries (manifest: Manifest, entryNames: string[]): string[] {
+function resolveManifestEntries(manifest: Manifest, entryNames: string[]): string[] {
   return entryNames.flatMap((entryName) => {
     const entry = manifest[entryName]
     return [entry.file, ...resolveManifestEntries(manifest, entry.imports || [])]
   })
 }
 
-async function parseManifest (outDir: string, islandsByPath: IslandsByPath) {
+async function parseManifest(outDir: string, islandsByPath: IslandsByPath) {
   const manifestPath = join(outDir, '.vite', 'manifest.json')
   try {
     return JSON.parse(await fs.readFile(manifestPath, 'utf-8'))
-  }
-  catch (err) {
+  } catch (err) {
     if (Object.keys(islandsByPath).length > 0) throw err
     return {}
   }

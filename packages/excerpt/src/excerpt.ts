@@ -19,26 +19,21 @@ export * from './types'
  * An iles module that sets `meta.excerpt` for MDX documents.
  * Also enables an `excerpt: true` prop in MDX components to render HTML.
  */
-export default function IlesExcerpts (userOptions: ExcerptOptions = {}): IlesModule {
+export default function IlesExcerpts(userOptions: ExcerptOptions = {}): IlesModule {
   const { separator = ['excerpt', 'Excerpt'], ...rest } = userOptions
   const options: Options = { ...rest, isSeparator: separatorFnFrom(separator) }
 
   return {
     name: '@islands/excerpt',
     markdown: {
-      rehypePlugins: [
-        [rehypePlugin, options],
-      ],
-      recmaPlugins: [
-        recmaPlugin,
-      ],
+      rehypePlugins: [[rehypePlugin, options]],
+      recmaPlugins: [recmaPlugin],
     },
   }
 }
 
-function separatorFnFrom (separator: string | string[] | SeparatorFn): SeparatorFn {
-  if (isSeparatorFn(separator))
-    return separator
+function separatorFnFrom(separator: string | string[] | SeparatorFn): SeparatorFn {
+  if (isSeparatorFn(separator)) return separator
 
   const separators = new Set(Array.isArray(separator) ? separator : [separator])
 
@@ -51,6 +46,6 @@ function separatorFnFrom (separator: string | string[] | SeparatorFn): Separator
   }
 }
 
-function isSeparatorFn (val: any): val is SeparatorFn {
+function isSeparatorFn(val: any): val is SeparatorFn {
   return typeof val === 'function'
 }

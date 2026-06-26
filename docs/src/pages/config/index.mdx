@@ -6,13 +6,11 @@ sidebar: auto
 [plugins]: /guide/plugins
 [Vite's plugins]: https://vitejs.dev/plugins/
 [config reference]: https://vitejs.dev/config/
-
 [site]: /guide/development#site
 [meta tags]: /guide/meta-tags
 [sitemap]: /guide/development#sitemap
-
 [shortcodes]: /guide/markdown#advanced-provide-components-shortcodes
-[deployment]: /guide/deployment 
+[deployment]: /guide/deployment
 [VitePress]: /faqs#vitepress
 [turbo]: /guide/turbo
 [documents]: /guide/documents
@@ -74,7 +72,7 @@ By default drafts will be displayed during development, but will be excluded whe
 
 - **Type:** `IlesModuleOption[]`
 
-<Iles/> modules to apply in the site. [Read the _Plugins and Modules_ guide][plugins].
+<Iles /> modules to apply in the site. [Read the _Plugins and Modules_ guide][plugins].
 
 ### `turbo` (experimental)
 
@@ -98,8 +96,9 @@ Which framework to use to compile `.jsx` and `.tsx` files.
 Whether to skip `.html` and trailing slashes in link hrefs and router paths.
 
 <Tip>
-Set `prettyUrls: false` to simplify the migration of an existing [VitePress] site
-without having to add redirects, or when deploying on services that don't support pretty urls ([most do][deployment]).
+  Set `prettyUrls: false` to simplify the migration of an existing [VitePress] site without having
+  to add redirects, or when deploying on services that don't support pretty urls ([most
+  do][deployment]).
 </Tip>
 
 ### `ssg`
@@ -112,9 +111,7 @@ Options applied during site generation when running <kbd>iles build</kbd>.
 
 This hook will be invoked before îles renders a page.
 
-<Tip>
-Modify `page.rendered` to alter the content of the page as needed.
-</Tip>
+<Tip>Modify `page.rendered` to alter the content of the page as needed.</Tip>
 
 #### `ssg.onSiteRendered`
 
@@ -134,7 +131,7 @@ Allows to configure how JS chunks for islands should be grouped.
 Whether to [generate a sitemap][sitemap] and reference it using a meta tag in all pages.
 
 <Tip warn>
-You must provide <kbd>[siteUrl](#siteurl)</kbd> to enable sitemap generation.
+  You must provide <kbd>[siteUrl](#siteurl)</kbd> to enable sitemap generation.
 </Tip>
 
 ### `siteUrl`
@@ -144,10 +141,7 @@ You must provide <kbd>[siteUrl](#siteurl)</kbd> to enable sitemap generation.
 URL for the [site] in production, used to generate absolute URLs for the [sitemap]
 and social [meta tags].
 
-
-<Tip>
-When set, it is exposed as `site.url` and `site.canonical`.
-</Tip>
+<Tip>When set, it is exposed as `site.url` and `site.canonical`.</Tip>
 
 ### `debug`
 
@@ -158,8 +152,7 @@ Whether to output more information about islands and hydration in development.
 
 ## Your App
 
-<Iles/> will pre-configure a Vue 3 app that will load any [pages] defined in the
-site.
+<Iles /> will pre-configure a Vue 3 app that will load any [pages] defined in the site.
 
 You may provide additional configuration in `src/app.ts`, and leverage
 intellisense by using the `defineApp` helper.
@@ -168,21 +161,21 @@ intellisense by using the `defineApp` helper.
 import { defineApp } from 'iles'
 
 export default defineApp({
-  head ({ frontmatter, site }) {
+  head({ frontmatter, site }) {
     return {
       meta: [
         { property: 'author', content: site.author },
         { property: 'keywords', content: computed(() => frontmatter.tags) },
-      ]
+      ],
     }
   },
-  enhanceApp ({ app, head, router }) {
+  enhanceApp({ app, head, router }) {
     // Configure the app to add plugins.
   },
   router: {
-    scrollBehavior (current, previous, savedPosition) {
+    scrollBehavior(current, previous, savedPosition) {
       // Configure the scroll behavior
-    }, 
+    },
   },
 })
 ```
@@ -242,28 +235,18 @@ import UnoCSS from 'unocss/vite'
 
 export default defineConfig({
   siteUrl: 'https://iles-docs.netlify.app',
-  extendFrontmatter (frontmatter, filename) {
-    if (filename.includes('/posts/'))
-      frontmatter.layout = 'post'
+  extendFrontmatter(frontmatter, filename) {
+    if (filename.includes('/posts/')) frontmatter.layout = 'post'
   },
   markdown: {
-    remarkPlugins: [
-      'remark-gemoji',
-    ],
+    remarkPlugins: ['remark-gemoji'],
   },
-  modules: [
-    '@islands/icons',
-    '@islands/headings',
-    '@islands/prism',
-  ],
+  modules: ['@islands/icons', '@islands/headings', '@islands/prism'],
   vite: {
-    plugins: [
-      UnoCSS(),
-    ],
+    plugins: [UnoCSS()],
   },
 })
 ```
-
 
 [vue-router]: https://next.router.vuejs.org/
 [@unhead/vue]: https://github.com/@unhead/vue

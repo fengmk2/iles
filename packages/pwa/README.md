@@ -34,8 +34,6 @@ import { defineConfig } from 'iles'
 import pwa from '@islands/pwa'
 
 export default defineConfig({
-  modules: [
-    pwa(options),
-  ],
+  modules: [pwa(options)],
 })
 ```

@@ -19,7 +19,10 @@ export const APP_COMPONENT_PATH = join(COMPONENTS_PATH, 'App.vue')
 export const ISLAND_COMPONENT_PATH = join(COMPONENTS_PATH, 'Island.vue')
 export const NOT_FOUND_COMPONENT_PATH = join(COMPONENTS_PATH, 'NotFound.vue')
 export const DEBUG_COMPONENT_PATH = join(COMPONENTS_PATH, 'DebugPanel.vue')
-export const HYDRATION_DIST_PATH = join(dirname(require.resolve('@islands/hydration/package.json')), 'dist')
+export const HYDRATION_DIST_PATH = join(
+  dirname(require.resolve('@islands/hydration/package.json')),
+  'dist',
+)
 
 // special virtual file
 // we can't directly import '/@islands' because
@@ -36,7 +39,7 @@ export const USER_SITE_REQUEST_PATH = `/${USER_SITE_ID}`
 
 export const NOT_FOUND_REQUEST_PATH = '@islands/components/NotFound'
 
-export function resolveAliases (root: string, userConfig: UserConfig): AliasOptions {
+export function resolveAliases(root: string, userConfig: UserConfig): AliasOptions {
   const paths: Record<string, string> = {
     '/@shared': SHARED_PATH,
     [USER_APP_ID]: USER_APP_REQUEST_PATH,
@@ -47,7 +50,7 @@ export function resolveAliases (root: string, userConfig: UserConfig): AliasOpti
   const { srcDir = 'src' } = userConfig
 
   const aliases: Alias[] = [
-    ...Object.keys(paths).map(p => ({
+    ...Object.keys(paths).map((p) => ({
       find: p,
       replacement: paths[p],
     })),
@@ -64,21 +67,17 @@ export function resolveAliases (root: string, userConfig: UserConfig): AliasOpti
     // iles itself
     {
       find: /^vue$/,
-      replacement: require.resolve(
-        '@vue/runtime-dom/dist/runtime-dom.esm-bundler.js',
-      ),
+      replacement: require.resolve('@vue/runtime-dom/dist/runtime-dom.esm-bundler.js'),
     },
     {
       find: /^vue-router$/,
-      replacement: require.resolve(
-        'vue-router/dist/vue-router.esm-bundler.js',
-      ),
+      replacement: require.resolve('vue-router/dist/vue-router.esm-bundler.js'),
     },
     {
       find: /^@islands\/hydration$/,
       replacement: require.resolve('@islands/hydration'),
     },
-    ...['vue', 'vanilla', 'svelte', 'preact', 'solid'].map(name => ({
+    ...['vue', 'vanilla', 'svelte', 'preact', 'solid'].map((name) => ({
       find: new RegExp(`^@islands/hydration/${name}$`),
       replacement: require.resolve(`@islands/hydration/${name}`),
     })),

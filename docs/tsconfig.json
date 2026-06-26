@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    "baseUrl": ".",
     "module": "esnext",
     "target": "esnext",
     "moduleResolution": "node",
@@ -14,15 +13,10 @@
     "skipLibCheck": true,
     "esModuleInterop": true,
     "lib": ["esnext", "DOM"],
-    "types": [
-      "@vue-macros/reactivity-transform/macros-global",
-      "vite-plugin-pwa/client"
-    ],
+    "types": ["@vue-macros/reactivity-transform/macros-global", "vite-plugin-pwa/client"],
     "paths": {
-      "~/*": ["src/*"]
+      "~/*": ["./src/*"]
     }
   },
-  "exclude": [
-    "node_modules/cypress"
-  ]
+  "exclude": ["node_modules/cypress"]
 }

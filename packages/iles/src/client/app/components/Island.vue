@@ -1,5 +1,11 @@
 <script lang="ts">
-import { defineAsyncComponent, defineComponent, h, createCommentVNode, createStaticVNode } from 'vue'
+import {
+  defineAsyncComponent,
+  defineComponent,
+  h,
+  createCommentVNode,
+  createStaticVNode,
+} from 'vue'
 import type { PropType, DefineComponent } from 'vue'
 import type { Framework } from '@islands/hydration'
 import { asyncMapObject, mapObject, serialize } from '../utils'
@@ -9,21 +15,26 @@ import { useRenderer } from '../composables/renderer'
 import { useAppConfig } from '../composables/appConfig'
 import { useVueRenderer } from '../composables/vueRenderer'
 
-function trackIsland (this: any, { __ILE_DEVTOOLS__ }: any = window) {
+function trackIsland(this: any, { __ILE_DEVTOOLS__ }: any = window) {
   __ILE_DEVTOOLS__?.addIslandToDevtools(this)
 }
 
-function untrackIsland (this: any, { __ILE_DEVTOOLS__, __ILE_DISPOSE__ }: any = window) {
+function untrackIsland(this: any, { __ILE_DEVTOOLS__, __ILE_DISPOSE__ }: any = window) {
   __ILE_DEVTOOLS__?.removeIslandFromDevtools(this)
 }
 
-function disposeIsland (this: any, { __ILE_DEVTOOLS__, __ILE_DISPOSE__ }: any = window) {
+function disposeIsland(this: any, { __ILE_DEVTOOLS__, __ILE_DISPOSE__ }: any = window) {
   __ILE_DISPOSE__?.get(this.id)?.()
 }
 
-function inspectMediaQuery (query: string) {
+function inspectMediaQuery(query: string) {
   if (!query.includes('(') && query.includes(': '))
-    console.warn('You might need to add parenthesis to the following media query.\n\t', query, '\n', 'https://developer.mozilla.org/en-US/docs/Web/CSS/Media_Queries/Using_media_queries#targeting_media_features')
+    console.warn(
+      'You might need to add parenthesis to the following media query.\n\t',
+      query,
+      '\n',
+      'https://developer.mozilla.org/en-US/docs/Web/CSS/Media_Queries/Using_media_queries#targeting_media_features',
+    )
   return query
 }
 
@@ -43,27 +54,31 @@ export default defineComponent({
     [Hydrate.WhenVisible]: { type: Boolean, default: false },
     [Hydrate.None]: { type: Boolean, default: false },
   },
-  setup (props, { attrs }) {
-    let strategy = Object.values(Hydrate).find(s => props[s])
+  setup(props, { attrs }) {
+    let strategy = Object.values(Hydrate).find((s) => props[s])
     if (!strategy) {
-      console.warn('Unknown hydration strategy, falling back to client:load. Received:', { ...attrs })
+      console.warn('Unknown hydration strategy, falling back to client:load. Received:', {
+        ...attrs,
+      })
       strategy = Hydrate.OnLoad
     }
 
     const ext = props.importFrom.split('.').slice(-1)[0]
     const appConfig = useAppConfig()
-    const framework: Framework = props.using
-      || (ext === 'svelte' && 'svelte')
-      || ((ext === 'js' || ext === 'ts') && 'vanilla')
-      || ((ext === 'jsx' || ext === 'tsx') && appConfig.jsx)
-      || 'vue'
+    const framework: Framework =
+      props.using ||
+      (ext === 'svelte' && 'svelte') ||
+      ((ext === 'js' || ext === 'ts') && 'vanilla') ||
+      ((ext === 'jsx' || ext === 'tsx') && appConfig.jsx) ||
+      'vue'
 
     return {
       id: newHydrationId(),
       strategy,
       framework,
       appConfig,
-      islandsForPath: import.meta.env.SSR && strategy !== Hydrate.None ? useIslandsForPath() : undefined,
+      islandsForPath:
+        import.meta.env.SSR && strategy !== Hydrate.None ? useIslandsForPath() : undefined,
       renderVNodes: useVueRenderer(),
       prerender: import.meta.env.SSR ? useRenderer(framework) : undefined,
     }
@@ -73,7 +88,7 @@ export default defineComponent({
   updated: trackIsland,
   beforeUnmount: untrackIsland,
   unmounted: disposeIsland,
-  render () {
+  render() {
     const isSSR = import.meta.env.SSR
 
     const props = { ...this.$attrs }
@@ -81,12 +96,12 @@ export default defineComponent({
       props._mediaQuery = inspectMediaQuery(this.$props[Hydrate.MediaQuery] as string)
 
     const { _, ...slots } = this.$slots
-    const slotVNodes = mapObject(slots, slotFn => slotFn?.())
+    const slotVNodes = mapObject(slots, (slotFn) => slotFn?.())
     const hydrationPkg = `${isSSR ? '' : '/@id/'}@islands/hydration`
     let renderedSlots: Record<string, string>
 
     const renderSlots = async () =>
-      renderedSlots ||= await asyncMapObject(slotVNodes, this.renderVNodes)
+      (renderedSlots ||= await asyncMapObject(slotVNodes, this.renderVNodes))
 
     const renderScript = async () => {
       const slots = await renderSlots()
@@ -94,12 +109,13 @@ export default defineComponent({
       const frameworkPath = `${hydrationPkg}/${this.framework}`
 
       return `import { ${hydrationFns[this.strategy]} as hydrate } from '${hydrationPkg}'
-${isEager(this.strategy)
-    ? `import framework from '${frameworkPath}'
+${
+        isEager(this.strategy)
+          ? `import framework from '${frameworkPath}'
 import { ${this.importName} as component } from '${componentPath}'`
-    : `const framework = async () => (await import('${frameworkPath}')).default
+          : `const framework = async () => (await import('${frameworkPath}')).default
 const component = async () => (await import('${componentPath}')).${this.importName}`
-}
+      }
 hydrate(framework, component, '${this.id}', ${serialize(props)}, ${serialize(slots)})
   `
     }
@@ -119,34 +135,42 @@ hydrate(framework, component, '${this.id}', ${serialize(props)}, ${serialize(slo
 
       if (this.framework === 'vue') {
         const vnode = h(this.component, this.$attrs, this.$slots)
-        return isSSR ? vnode : h(defineAsyncComponent(async () => createStaticVNode(await this.renderVNodes(vnode), undefined as any)))
+        return isSSR
+          ? vnode
+          : h(
+              defineAsyncComponent(async () =>
+                createStaticVNode(await this.renderVNodes(vnode), undefined as any),
+              ),
+            )
       }
 
       const prerender = this.prerender
       if (!prerender) return undefined
 
-      return h(defineAsyncComponent(async () => {
-        const slots = await renderSlots()
-        const result = await prerender(this.component, this.$attrs, slots, this.id)
-        return createStaticVNode(result, undefined as any)
-      }))
+      return h(
+        defineAsyncComponent(async () => {
+          const slots = await renderSlots()
+          const result = await prerender(this.component, this.$attrs, slots, this.id)
+          return createStaticVNode(result, undefined as any)
+        }),
+      )
     }
 
     const ileAttrs: Record<string, any> = { id: this.id }
-    if (this.$attrs.class)
-      ileAttrs.class = this.$attrs.class
+    if (this.$attrs.class) ileAttrs.class = this.$attrs.class
 
     const ileRoot = h('ile-root', ileAttrs, prerenderIsland())
 
-    if (isSSR && this.strategy === Hydrate.None)
-      return ileRoot
+    if (isSSR && this.strategy === Hydrate.None) return ileRoot
 
     return [
       ileRoot,
-      h(defineAsyncComponent(async () =>
-        isSSR
-          ? createCommentVNode(await renderPlaceholder())
-          : h('script', { async: true, type: 'module', innerHTML: await renderScript() })),
+      h(
+        defineAsyncComponent(async () =>
+          isSSR
+            ? createCommentVNode(await renderPlaceholder())
+            : h('script', { async: true, type: 'module', innerHTML: await renderScript() }),
+        ),
       ),
     ]
   },

@@ -38,9 +38,7 @@ An [îles] module to generate feeds for your site:
 import { defineConfig } from 'iles'
 
 export default defineConfig({
-  modules: [
-    '@islands/feed',
-  ],
+  modules: ['@islands/feed'],
 })
 ```
 

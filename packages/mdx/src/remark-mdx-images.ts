@@ -1,4 +1,8 @@
-import type { MdxJsxFlowElement, MdxJsxTextElement, MdxJsxAttributeValueExpression } from 'mdast-util-mdx-jsx'
+import type {
+  MdxJsxFlowElement,
+  MdxJsxTextElement,
+  MdxJsxAttributeValueExpression,
+} from 'mdast-util-mdx-jsx'
 import type { MdxjsEsm } from 'mdast-util-mdxjs-esm'
 import type { Root, Image } from 'mdast'
 import type { Plugin } from 'unified'
@@ -14,22 +18,20 @@ type ImagePlugin = Plugin<[MarkdownOptions?], Root, Root>
  * A Remark plugin for converting Markdown images to Mdx images using imports
  * for the image source.
  */
-export const remarkMdxImages: ImagePlugin = options => (ast, vfile) => {
+export const remarkMdxImages: ImagePlugin = (options) => (ast, vfile) => {
   const imports: MdxjsEsm[] = []
   const imported = new Map<string, string>()
 
   visit(ast, (node, index, parent) => {
-    if (node.type === 'image')
-      return replaceMarkdownImage(node, index!, parent!)
+    if (node.type === 'image') return replaceMarkdownImage(node, index!, parent!)
 
     if (isJsxElement(node) && (node.name === 'img' || node.name === 'Img' || node.name === 'Image'))
       return replaceSrcAttribute(node)
   })
 
-  if (imports.length > 0)
-    ast.children.unshift(...imports)
+  if (imports.length > 0) ast.children.unshift(...imports)
 
-  function replaceSrcAttribute (node: MdxJsxTextElement | MdxJsxFlowElement) {
+  function replaceSrcAttribute(node: MdxJsxTextElement | MdxJsxFlowElement) {
     for (const attr of node.attributes) {
       if (attr.type === 'mdxJsxAttribute' && attr.name === 'src' && isString(attr.value)) {
         const srcExpression = imageSrcToMdxExpression(attr.value)
@@ -40,7 +42,7 @@ export const remarkMdxImages: ImagePlugin = options => (ast, vfile) => {
     return SKIP
   }
 
-  function replaceMarkdownImage (node: Image, index: number, parent: Parent) {
+  function replaceMarkdownImage(node: Image, index: number, parent: Parent) {
     const src = imageSrcToMdxExpression(node.url)
 
     if (src) {
@@ -51,8 +53,11 @@ export const remarkMdxImages: ImagePlugin = options => (ast, vfile) => {
         type: 'mdxJsxTextElement',
         name: 'img',
         children: [],
-        attributes: Object.entries(attrs)
-          .map(([name, value]) => ({ type: 'mdxJsxAttribute', name, value })),
+        attributes: Object.entries(attrs).map(([name, value]) => ({
+          type: 'mdxJsxAttribute',
+          name,
+          value,
+        })),
       }
 
       parent!.children.splice(index!, 1, mdxImage)
@@ -61,7 +66,7 @@ export const remarkMdxImages: ImagePlugin = options => (ast, vfile) => {
     return SKIP
   }
 
-  function imageSrcToMdxExpression (url: string): undefined | MdxJsxAttributeValueExpression {
+  function imageSrcToMdxExpression(url: string): undefined | MdxJsxAttributeValueExpression {
     const name = imageSrcToIdentifier(url)
     if (!name) return
     return {
@@ -77,7 +82,7 @@ export const remarkMdxImages: ImagePlugin = options => (ast, vfile) => {
     }
   }
 
-  function imageSrcToIdentifier (url: string) {
+  function imageSrcToIdentifier(url: string) {
     if (isAbsolute(url)) return
 
     let name = imported.get(url)

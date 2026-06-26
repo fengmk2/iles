@@ -12,8 +12,7 @@ describe('DocSearch', () => {
     searchModal().should('be.visible')
   }
 
-  const searchModal = () =>
-    cy.get('.DocSearch-Modal')
+  const searchModal = () => cy.get('.DocSearch-Modal')
 
   const closeSearchModal = () => {
     cy.get('body').type('{esc}')
@@ -53,9 +52,11 @@ describe('DocSearch', () => {
 
     // Verify navigation happened — should be on a page about hydration.
     cy.url().should('include', 'hydration')
-    cy.get('h1').invoke('text').then((text) => {
-      expect(text.toLowerCase()).to.include('hydration')
-    })
+    cy.get('h1')
+      .invoke('text')
+      .then((text) => {
+        expect(text.toLowerCase()).to.include('hydration')
+      })
   })
 
   it('search works after turbo navigation', () => {

@@ -77,24 +77,9 @@
     "picocolors": "^1.0.1",
     "unist-util-visit": "^5.0.0",
     "unplugin-vue-components": "^0.27.3",
-    "vite": "^8.0.2",
+    "vite": "catalog:",
     "vue": "^3.5.12",
     "vue-router": "^4.4.0"
-  },
-  "peerDependencies": {
-    "@types/debug": "^4.1.12",
-    "@types/fs-extra": "^11.0.4",
-    "@types/micromatch": "^4.0.9",
-    "@types/minimist": "^1.2.5",
-    "@types/node": "^20.14.12",
-    "@types/unist": "^3.0.2",
-    "rolldown": "1.0.0-rc.9",
-    "@preact/preset-vite": "^2.10.5",
-    "@sveltejs/vite-plugin-svelte": "^7.0.0",
-    "vite-plugin-solid": "^2.11.11",
-    "mdast-util-mdx-jsx": "^3.1.2",
-    "vfile": "^6.0.2",
-    "mdast-util-mdxjs-esm": "^2.0.1"
   },
   "devDependencies": {
     "chokidar": "^3",
@@ -108,7 +93,23 @@
     "semver": "^7.6.3",
     "tinyglobby": "0.2.6",
     "typescript": "^5.6.3",
+    "vite-plus": "catalog:",
     "vue-tsc": "^3.2.6"
+  },
+  "peerDependencies": {
+    "@preact/preset-vite": "^2.10.5",
+    "@sveltejs/vite-plugin-svelte": "^7.0.0",
+    "@types/debug": "^4.1.12",
+    "@types/fs-extra": "^11.0.4",
+    "@types/micromatch": "^4.0.9",
+    "@types/minimist": "^1.2.5",
+    "@types/node": "^20.14.12",
+    "@types/unist": "^3.0.2",
+    "mdast-util-mdx-jsx": "^3.1.2",
+    "mdast-util-mdxjs-esm": "^2.0.1",
+    "rolldown": "1.0.0-rc.9",
+    "vfile": "^6.0.2",
+    "vite-plugin-solid": "^2.11.11"
   },
   "engines": {
     "node": ">=20.19.0 || >=22.12.0"

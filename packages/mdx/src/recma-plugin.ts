@@ -6,43 +6,39 @@ import type { Plugin } from 'unified'
  * A plugin that replaces _missingMDXReference with Vue's resolveComponent,
  * allowing components to be resolved statically or at runtime.
  */
-const recmaPlugin: Plugin<[], Program> = function recmaVueResolveComponents () {
-  return tree => resolveMissingComponents(tree)
+const recmaPlugin: Plugin<[], Program> = function recmaVueResolveComponents() {
+  return (tree) => resolveMissingComponents(tree)
 }
 
 export default recmaPlugin
 
-function resolveMissingComponents (tree: Program) {
+function resolveMissingComponents(tree: Program) {
   walk(tree, {
     // @ts-ignore
-    enter (node: Node) {
-      if (node.type === 'Program')
-        return
+    enter(node: Node) {
+      if (node.type === 'Program') return
 
       if (node.type === 'ImportDeclaration') {
         const importSource = node.source?.value
-        if (typeof importSource === 'string' && (importSource.endsWith('jsx-runtime') || importSource.endsWith('jsx-dev-runtime'))) {
-          node.specifiers.push(
-            importSpecifier('resolveComponent'),
-            importSpecifier('raw'),
-          )
+        if (
+          typeof importSource === 'string' &&
+          (importSource.endsWith('jsx-runtime') || importSource.endsWith('jsx-dev-runtime'))
+        ) {
+          node.specifiers.push(importSpecifier('resolveComponent'), importSpecifier('raw'))
         }
         return this.skip()
       }
 
-      if (node.type !== 'FunctionDeclaration')
-        return this.skip()
+      if (node.type !== 'FunctionDeclaration') return this.skip()
 
       if (node.id?.name === '_createMdxContent') {
         rewriteMdxContentComponents(node.body.body)
         return this.skip()
       }
 
-      if (node.id?.name === 'MDXContent')
-        return this.skip()
+      if (node.id?.name === 'MDXContent') return this.skip()
 
-      if (node.id?.name === '_missingMdxReference')
-        return this.remove()
+      if (node.id?.name === '_missingMdxReference') return this.remove()
     },
   })
 
@@ -52,7 +48,7 @@ function resolveMissingComponents (tree: Program) {
 /**
  * Converts all _missingMdxReference assertions into _resolveComponent assignments.
  */
-function rewriteMdxContentComponents (statements: Statement[]) {
+function rewriteMdxContentComponents(statements: Statement[]) {
   for (let i = 0; i < statements.length; i++) {
     const statement = statements[i]
 
@@ -64,16 +60,16 @@ function rewriteMdxContentComponents (statements: Statement[]) {
 
     // Walk through the assertions that detect missing components.
     if (
-      statement.type === 'IfStatement'
-      && statement.test.type === 'UnaryExpression'
-      && statement.test.argument.type === 'Identifier'
-      && statement.consequent.type === 'ExpressionStatement'
+      statement.type === 'IfStatement' &&
+      statement.test.type === 'UnaryExpression' &&
+      statement.test.argument.type === 'Identifier' &&
+      statement.consequent.type === 'ExpressionStatement'
     ) {
       const missingReferenceCall = statement.consequent.expression
 
       if (
-        missingReferenceCall.type === 'CallExpression'
-        && missingReferenceCall.callee.type === 'Identifier'
+        missingReferenceCall.type === 'CallExpression' &&
+        missingReferenceCall.callee.type === 'Identifier'
       ) {
         // Replace _missingMdxReference with _resolveComponents
         missingReferenceCall.callee.name = '_resolveComponent'
@@ -98,7 +94,7 @@ function rewriteMdxContentComponents (statements: Statement[]) {
   }
 }
 
-function importSpecifier (name: string): ImportSpecifier {
+function importSpecifier(name: string): ImportSpecifier {
   return {
     type: 'ImportSpecifier',
     imported: { type: 'Identifier', name },

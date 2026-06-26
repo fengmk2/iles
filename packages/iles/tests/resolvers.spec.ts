@@ -20,14 +20,11 @@ describe('resolvers', () => {
     const layoutsDir = path.resolve(vuePoint, 'src/layouts')
     const resolve = IlesLayoutResolver({ layoutsDir } satisfies Partial<AppConfig> as AppConfig)
 
-    expect(resolve('DefaultLayout'))
-      .toEqual({ name: 'default', from: `${layoutsDir}/default.vue` })
+    expect(resolve('DefaultLayout')).toEqual({ name: 'default', from: `${layoutsDir}/default.vue` })
 
-    expect(resolve('PostLayout'))
-      .toEqual({ name: 'default', from: `${layoutsDir}/post.vue` })
+    expect(resolve('PostLayout')).toEqual({ name: 'default', from: `${layoutsDir}/post.vue` })
 
-    expect(resolve('SomethingElseLayout'))
-      .toEqual(undefined)
+    expect(resolve('SomethingElseLayout')).toEqual(undefined)
 
     expect(resolve('Layout')).toEqual(undefined)
   })

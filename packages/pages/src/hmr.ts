@@ -3,7 +3,11 @@ import { debug, slash } from './utils'
 import { MODULE_ID } from './types'
 import type { ResolvedOptions, PagesApi } from './types'
 
-export function handleHMR (api: PagesApi, options: ResolvedOptions, clearRoutes: () => void): Plugin['hotUpdate'] {
+export function handleHMR(
+  api: PagesApi,
+  options: ResolvedOptions,
+  clearRoutes: () => void,
+): Plugin['hotUpdate'] {
   const server = options.server!
 
   return async function ({ file, type }) {
@@ -31,14 +35,14 @@ export function handleHMR (api: PagesApi, options: ResolvedOptions, clearRoutes:
     }
   }
 
-  function fullReload () {
+  function fullReload() {
     invalidatePagesModule(server)
     clearRoutes()
     server.ws.send({ type: 'full-reload' })
   }
 }
 
-function invalidatePagesModule ({ moduleGraph }: ViteDevServer) {
+function invalidatePagesModule({ moduleGraph }: ViteDevServer) {
   const mod = moduleGraph.getModuleById(MODULE_ID)
   if (mod) moduleGraph.invalidateModule(mod)
 }

@@ -6,7 +6,7 @@ interface ManualChunkMeta {
 }
 type GetManualChunk = (id: string, meta: ManualChunkMeta) => string | void
 
-export function extendManualChunks (config: AppConfig): GetManualChunk {
+export function extendManualChunks(config: AppConfig): GetManualChunk {
   const userChunks = config.ssg.manualChunks
   const cache = new Map<string, string | undefined>()
   const chunkForExtension = {
@@ -31,7 +31,7 @@ export function extendManualChunks (config: AppConfig): GetManualChunk {
 //
 // This heuristic ensures that framework-specific dependencies don't end up in a
 // shared chunk which would delay hydration for all islands.
-function vendorPerFramework (
+function vendorPerFramework(
   chunkForExtension: Record<string, string>,
   id: string,
   api: ManualChunkMeta,
@@ -63,7 +63,13 @@ function vendorPerFramework (
 
   let name
   for (const importer of mod.importers) {
-    const importerChunk = vendorPerFramework(chunkForExtension, importer, api, cache, importStack.concat(id))
+    const importerChunk = vendorPerFramework(
+      chunkForExtension,
+      importer,
+      api,
+      cache,
+      importStack.concat(id),
+    )
     if (!name) name = importerChunk
     if (importerChunk && importerChunk !== name) break
   }

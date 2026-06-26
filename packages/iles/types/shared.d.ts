@@ -3,7 +3,7 @@ import type {
   UserConfig as ViteOptions,
   ConfigEnv,
   PluginOption as VitePluginOption,
-} from 'vite'
+} from 'vite-plus'
 import type { GetModuleInfo } from 'rolldown'
 import type { App, Ref, DefineComponent, VNode, AsyncComponentLoader } from 'vue'
 import type { Plugin as VuePlugin, Options as VueOptions } from '@vitejs/plugin-vue'
@@ -27,7 +27,7 @@ import type {
 import type { HeadClient, HeadObject } from '@unhead/vue'
 import type { PagesApi, PagesOptions, PageFrontmatter, PageMeta } from '@islands/pages'
 export type { RawPageMatter, PageFrontmatter, PageMeta } from '@islands/pages'
-export type { OnLoadFn } from '@islands/hydration/dist/vanilla'
+export type { OnLoadFn } from '@islands/hydration/vanilla'
 
 import type { MarkdownOptions } from '@islands/mdx'
 

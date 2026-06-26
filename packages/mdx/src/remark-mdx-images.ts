@@ -4,7 +4,7 @@ import type {
   MdxJsxAttributeValueExpression,
 } from 'mdast-util-mdx-jsx'
 import type { MdxjsEsm } from 'mdast-util-mdxjs-esm'
-import type { Root, Image } from 'mdast'
+import type { Root, RootContent, Image } from 'mdast'
 import type { Plugin } from 'unified'
 import type { Parent } from 'unist'
 import { visit, SKIP } from 'unist-util-visit'
@@ -29,7 +29,7 @@ export const remarkMdxImages: ImagePlugin = (options) => (ast, vfile) => {
       return replaceSrcAttribute(node)
   })
 
-  if (imports.length > 0) ast.children.unshift(...imports)
+  if (imports.length > 0) ast.children.unshift(...(imports as unknown as RootContent[]))
 
   function replaceSrcAttribute(node: MdxJsxTextElement | MdxJsxFlowElement) {
     for (const attr of node.attributes) {

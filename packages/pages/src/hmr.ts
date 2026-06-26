@@ -1,4 +1,4 @@
-import type { ViteDevServer, Plugin } from 'vite'
+import type { ViteDevServer, Plugin } from 'vite-plus'
 import { debug, slash } from './utils'
 import { MODULE_ID } from './types'
 import type { ResolvedOptions, PagesApi } from './types'

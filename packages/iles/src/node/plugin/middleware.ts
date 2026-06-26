@@ -1,7 +1,7 @@
 import { existsSync } from 'fs'
 import pc from 'picocolors'
 import { resolve, relative, extname } from 'pathe'
-import type { ViteDevServer, Connect } from 'vite'
+import type { ViteDevServer, Connect } from 'vite-plus'
 import createDebugger from 'debug'
 
 import type { AppConfig } from '../shared'

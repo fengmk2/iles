@@ -11,5 +11,8 @@ export default async (env, root = process.cwd()) => {
 
   return mergeConfig(config.vite, {
     plugins: IslandsPlugins(config),
+    // vite-plus only resolves TypeScript `paths` aliases (e.g. @node/*, @client/*)
+    // when this is enabled; it defaults to false. Required for the spec files.
+    resolve: { tsconfigPaths: true },
   })
 }
